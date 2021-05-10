@@ -41,12 +41,9 @@ exports.getTaskById = (id) => {
                 resolve(task);
             }
         });
-    });
+    }); 
+};
 
-// open the database
-const db = new sqlite.Database("tasks.db", (err) => {
-  if (err) throw err;
-});
 
 // get all courses
 exports.listTasks = () => {
@@ -68,7 +65,7 @@ exports.listTasks = () => {
     });
   });
 };
-
+/*
 exports.filteredTasks = async (important, private, deadline) => {
   const query = `SELECT * FROM tasks`;
   let whereClause = [];
@@ -93,6 +90,7 @@ exports.filteredTasks = async (important, private, deadline) => {
     });
   });
 };
+*/
 //update a task
 exports.updateTask = (task) => {
   return new Promise((resolve, reject) => {
@@ -131,4 +129,4 @@ exports.deleteTask = (id) => {
       resolve(null);
     });
   });
-
+};
