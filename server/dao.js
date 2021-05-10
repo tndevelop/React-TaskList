@@ -1,25 +1,56 @@
-'use strict';
+"use strict";
 /* Data Access Object (DAO) module for accessing courses and exams */
 
-const sqlite = require('sqlite3');  
+const sqlite = require("sqlite3");
+const dayjs = require("dayjs");
 
 // open the database
-const db = new sqlite.Database('tasks.db', (err) => {
-    if(err) throw err;
-  });
+const db = new sqlite.Database("tasks.db", (err) => {
+  if (err) throw err;
+});
 
-
-  // get all courses
+// get all courses
 exports.listTasks = () => {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM tasks';
-      db.all(sql, [], (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        const courses = rows.map((t) => ({ id: t.id, description: t.description, important: t.important, private : t.private, deadline : t.deadline }));
-        resolve(courses);
-      });
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM tasks";
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const courses = rows.map((t) => ({
+        id: t.id,
+        description: t.description,
+        important: t.important,
+        private: t.private,
+        deadline: t.deadline,
+      }));
+      resolve(courses);
     });
-  };
+  });
+};
+
+exports.filteredTasks = async (important, private, deadline) => {
+  const query = `SELECT * FROM tasks`;
+  let whereClause = [];
+  if (important instanceof Number) whereClause.push(`important=${important}`);
+  if (private instanceof Number) whereClause.push(`private=${private}`);
+  if (deadline instanceof dayjs.Dayjs) whereClause.push(`deadline=${deadline}`);
+  if (whereClause.length !== 0) query += whereClause.join(" AND ");
+  return new Promise((resolve, reject) => {
+    db.all(query, [], (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const courses = rows.map((t) => ({
+        id: t.id,
+        description: t.description,
+        important: t.important,
+        private: t.private,
+        deadline: t.deadline,
+      }));
+      resolve(courses);
+    });
+  });
+};
