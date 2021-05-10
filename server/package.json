@@ -10,7 +10,10 @@
   "author": "Web Applications I",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-validator": "^6.11.1",
+    "morgan": "^1.10.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {}
 }
