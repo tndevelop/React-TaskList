@@ -36,7 +36,7 @@ exports.getTaskById = (id) => {
                 return;
             }   
             if (row == undefined) {
-                resolve({ error: 'Task not found.' });
+                reject({ error: 'Task not found.' , code : 404});
             } else {
                 const task = { id: row.id, description: row.description, important: row.important, private: row.private, deadline: row.deadline };
                 resolve(task);

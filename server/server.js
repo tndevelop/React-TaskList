@@ -51,23 +51,17 @@ app.use(express.json()); // for parsing json request body
 
 
 // GET /api/tasks
+/*
 app.get('/api/tasks', (req, res) => {
     dao.listTasks()
     .then(exams => res.json(exams))
     .catch(()=> res.status(500).end());
   });
-
-app.get('/api/tasks/:id', (req, res) => {
-
-        dao.getTaskById(  req.params.id  )
-        .then(exam => res.json(exam))
-        .catch(() => res.status(500).end());
-    });
+*/
 
 
 
-
-// GET /api/exams
+// GET /api/tasks
 app.get("/api/tasks", (req, res) => {
   const filter = req.query.filter ? req.query.filter : "All";
   const startDateFilter = req.query.startDate;
@@ -82,5 +76,18 @@ app.get("/api/tasks", (req, res) => {
     )
     .then((exams) => res.json(exams))
     .catch(() => res.status(500).end());
+});
+
+//GET /api/tasks/:id
+app.get('/api/tasks/:id', (req, res) => {
+
+    dao.getTaskById(  req.params.id  )
+    .then(exam => res.json(exam))
+    .catch((err) => {
+        if(err.code == 404){
+            res.status(404).json(err);
+        }
+        res.status(500).end();
+    });
 });
 

@@ -31,6 +31,63 @@ Provide a short description for API with the required parameters, follow the pro
 * [Sample response, with body (if any)]
 * [Error responses, if any]
 
+### __List all tasks__
+
+URL: `/api/tasks`
+
+HTTP Method: GET
+
+Description: Get all tasks of the task list.
+
+Request body: _None_
+
+Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
+
+Response body:
+```
+[
+	{
+		"id": 2,
+		"description": "Go for a walk",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-04-14 08:30"
+	},
+	{
+		"id": 4,
+		"description": "Watch the Express videolecture",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-05-24 09:00"
+	}
+    ...
+]
+```
+
+
+### __Get task by id__
+
+URL: `/api/tasks/:id`
+
+HTTP Method: GET
+
+Description: Get a single task of the list given it's id.
+
+Request body: _None_
+
+Response: `200 OK` (success) or `500 Internal Server Error` (generic error) or `404 Not Found` (wrong code)
+
+Response body:
+```
+{
+	"id": 2,
+	"description": "Go for a walk",
+	"important": 1,
+	"private": 1,
+	"deadline": "2021-04-14 08:30"
+}
+```
+
 
 ### __Mark task as completed/uncompleted__
 
