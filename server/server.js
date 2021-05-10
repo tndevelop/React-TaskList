@@ -15,9 +15,16 @@ app.use(morgan('dev'));
 app.use(express.json()); // for parsing json request body
 
 
-// GET /api/exams
+// GET /api/tasks
 app.get('/api/tasks', (req, res) => {
     dao.listTasks()
     .then(exams => res.json(exams))
     .catch(()=> res.status(500).end());
   });
+
+app.get('/api/tasks/:id', (req, res) => {
+
+        dao.getTaskById(  req.params.id  )
+        .then(exam => res.json(exam))
+        .catch(() => res.status(500).end());
+    });
