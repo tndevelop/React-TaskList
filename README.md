@@ -30,3 +30,29 @@ Provide a short description for API with the required parameters, follow the pro
 * [Sample request, with body (if any)]
 * [Sample response, with body (if any)]
 * [Error responses, if any]
+
+
+### __Mark task as completed/uncompleted__
+
+URL: `api/tasks/update`
+
+Method: PUT
+
+Description: Mark an existing task  as completed/uncompleted
+
+Request body: An object representing the entire task (Content-Type: `application/json`)
+```
+{
+    "id":2
+    "description":"Go for a walk"
+    "important":1
+    "private":1
+    "deadline":"2021-04-14 08:30"
+    "completed":1
+    "user":1
+}
+```
+
+Response: `200 OK` (success) or `503 Service Unavailable` (generic error). If the request body is not valid, `422 Unprocessable Entity` (validation error).
+
+Response body: _None_
