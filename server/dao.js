@@ -10,6 +10,7 @@ const db = new sqlite.Database('tasks.db', (err) => {
 });
 
 
+
 // get all courses
 exports.listTasks = () => {
     return new Promise((resolve, reject) => {
@@ -45,34 +46,15 @@ exports.getTaskById = (id) => {
 };
 
 
-// get all courses
-exports.listTasks = () => {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM tasks";
-    db.all(sql, [], (err, rows) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      const courses = rows.map((t) => ({
-        id: t.id,
-        description: t.description,
-        important: t.important,
-        private: t.private,
-        deadline: t.deadline,
-      }));
-      resolve(courses);
-    });
-  });
-};
-/*
-exports.filteredTasks = async (important, private, deadline) => {
-  const query = `SELECT * FROM tasks`;
+exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
+  let query = `SELECT * FROM tasks`;
+
   let whereClause = [];
-  if (important instanceof Number) whereClause.push(`important=${important}`);
-  if (private instanceof Number) whereClause.push(`private=${private}`);
-  if (deadline instanceof dayjs.Dayjs) whereClause.push(`deadline=${deadline}`);
-  if (whereClause.length !== 0) query += whereClause.join(" AND ");
+  if (important) whereClause.push(`important=${important}`);
+  if (isPrivate) whereClause.push(`private=${isPrivate}`);
+  if (startDeadline) whereClause.push(`deadline >= '${startDeadline}'`);
+  if (endDeadline) whereClause.push(`deadline <= '${endDeadline}'`);
+  if (whereClause.length !== 0) query += " WHERE " + whereClause.join(" AND ");
   return new Promise((resolve, reject) => {
     db.all(query, [], (err, rows) => {
       if (err) {
@@ -90,7 +72,7 @@ exports.filteredTasks = async (important, private, deadline) => {
     });
   });
 };
-*/
+
 //update a task
 exports.updateTask = (task) => {
   return new Promise((resolve, reject) => {
