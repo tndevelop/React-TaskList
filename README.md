@@ -5,7 +5,7 @@
 Team members:
 * s281879 MARSIANO JONATHAN
 * s282478 NATTA TOMMASO
-* s123456 LASTNAME FIRSTNAME
+* s281933 ORLANDO LUCA
 * s123456 LASTNAME FIRSTNAME (delete line if not needed)
 
 ## Instructions
@@ -87,6 +87,29 @@ Response body:
 	"deadline": "2021-04-14 08:30"
 }
 ```
+
+### __Create a new task__
+
+ URL: `/api/tasks`
+
+ HTTP Method: POST
+
+ Description: Insert a new task
+
+ Request body: An object that represents a task(Content-type: `Application/json`)
+```
+{
+    "description": "eat lunch",
+    "deadline": "2021-07-22 12:45",
+    "important": 1,
+    "private": 0,
+    "completed": 0
+
+}
+```
+Request body: _None_
+
+Response: `200 OK` (success) or `503 generic error` or `422 Unprocessable Entity` 
 
 
 ### __Mark task as completed/uncompleted__

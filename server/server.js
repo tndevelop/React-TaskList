@@ -78,6 +78,30 @@ app.get("/api/tasks", (req, res) => {
     .catch(() => res.status(500).end());
 });
 
+//add a new task
+app.post('/api/tasks', [
+  check('description').exists(),
+  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('private').isBoolean(),
+  check('important').isBoolean(),
+  check('completed').isBoolean()
+
+], async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+  try {
+    //await dao.updateExam(examToUpdate);
+    const task = req.body;
+    await dao.createTask(task);
+    res.status(200).end();
+  } catch (err) {
+    res.status(503).json({ error: `Database error while adding the task: ${err}` });
+  }
+});
+
+
 //GET /api/tasks/:id
 app.get('/api/tasks/:id', (req, res) => {
 

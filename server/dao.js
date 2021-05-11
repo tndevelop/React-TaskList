@@ -73,6 +73,35 @@ exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
   });
 };
 
+//create a new task
+exports.createTask = (task) => {
+  return new Promise((resolve, reject) => {
+    const sql_id = 'SELECT MAX(id) as maxId FROM tasks';
+    let id;
+    db.get(sql_id, [], (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (row.maxId) {
+        id = row.maxId + 1;
+      } else {
+        id = 1;
+      }
+    });
+
+    const sql = 'INSERT INTO tasks(id, description, important, private, deadline, completed, user) VALUES(?, ?, ?, ?, ?, ?, ?)';
+    db.run(sql, [id, task.description, task.important, task.private, task.deadline, task.completed, 1], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+
+};
+
 //update a task
 exports.updateTask = (task) => {
   return new Promise((resolve, reject) => {
