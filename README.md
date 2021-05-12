@@ -32,13 +32,13 @@ Provide a short description for API with the required parameters, follow the pro
 * [Error responses, if any]
 
 
-### __Mark task as completed/uncompleted__
+### __Update task__
 
-URL: `api/tasks/update`
+URL: `api/tasks/update/<id>`
 
 Method: PUT
 
-Description: Mark an existing task  as completed/uncompleted
+Description: Update entirely an existing task, identified by its id.
 
 Request body: An object representing the entire task (Content-Type: `application/json`)
 ```

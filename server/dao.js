@@ -37,7 +37,7 @@ exports.updateTask = (task) => {
         resolve(task.id);
       })
   });
-}
+};
 
 //delete a task
 exports.deleteTask = (id) => {
@@ -51,4 +51,4 @@ exports.deleteTask = (id) => {
       resolve(null);
     })
   });
-}
+};
