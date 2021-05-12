@@ -116,6 +116,7 @@ exports.updateTask = (task) => {
         task.deadline,
         task.completed,
         task.user,
+        task.id
       ],
       function (err) {
         if (err) {

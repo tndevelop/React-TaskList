@@ -6,6 +6,7 @@ const morgan = require("morgan"); // logging middleware
 const { check, query, validationResult } = require("express-validator"); // validation middleware
 const dao = require("./dao"); // module for accessing the DB
 const dayjs = require("dayjs");
+const { response } = require('express');
 
 /*id,description,important, private, deadline, complete, user */
 function filterToParameters(filterName, startDate, endDate) {
@@ -103,8 +104,8 @@ app.post('/api/tasks', [
 });
 
 
-//update an existing exam
-app.put("api/tasks/update/:id",[
+//update an existing task
+app.put("api/tasks/update",[
     check('description').exists(),
     check('deadline').if(deadline => deadline).isISO8601().toDate(),
     check('private').isBoolean(),
@@ -123,6 +124,43 @@ app.put("api/tasks/update/:id",[
         res.status(503).json({error:`Database error during the update of the task ${task}`});
     }
 });
+
+
+//mark a task as completed/uncompleted
+app.put("api/tasks/update/mark", [
+    check('description').exists(),
+    check('deadline').if(deadline => deadline).isISO8601().toDate(),
+    check('private').isBoolean(),
+    check('important').isBoolean(),
+    check('completed').isBoolean()], async (req,res) => {
+    const errores = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({errors: errors.array()});
+    }
+    try{
+        const task = req.body;
+        const existingTask = await dao.getTaskById(task.id);
+        if(compareTasks(task, existingTask)){
+            await dao.updateTask(task);
+            res.status(200).end();
+        }
+        res.status(400).json({error:"All fields of the task must be unchanged, except for the completed/uncompleted flag"});
+    }
+    catch(err){
+        res.status(503).json({error:`Database error during the marking of the task ${task}`});
+    }
+});
+
+const compareTasks = (task1, task2) => {
+    if(task1.description!==task2.description || 
+       task1.important!==task2.important ||
+       task1.private!==task2.private ||
+       task1.deadline!==task2.deadline ||
+       task1.user!==task2.user) {
+        return false;
+    }
+    return true;
+};
 
 
 
