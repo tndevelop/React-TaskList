@@ -128,12 +128,12 @@ app.put("api/tasks/update",[
     check('completed').isBoolean()], async (req,res) => {
     const errores = validationResult(req);
     if(!errors.isEmpty()){
-        return res.status(422).json({errors: errors.array()});
+        res.status(422).json({errors: errors.array()});
     }
     try{
         const task = req.body;
         await dao.updateTask(task);
-        res.status(200).end();
+        return res.status(200).end();
     }
     catch(err){
         res.status(503).json({error:`Database error during the update of the task ${task}`});
@@ -176,3 +176,15 @@ const compareTasks = (task1, task2) => {
     }
     return true;
 };
+
+app.delete('api/tasks/delete/:id', [], (req,res) => {
+  try{
+    await dao.deleteTask(req.params.id);
+    res.status(204).end();
+  }
+  catch(err){
+    res.status(503).json({error:`Database error during deletion of task ${req.params.id}`});
+  }
+});
+
+ExtensionScriptApis.delete

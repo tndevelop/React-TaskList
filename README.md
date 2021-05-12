@@ -138,13 +138,13 @@ Response: `200 OK` (success) or `503 Service Unavailable` (generic error). If th
 Response body: _None_
 
 
-### __Mark completed__
+### __Mark a task__
 
 URL: `api/tasks/update/mark`
 
 Method: PUT
 
-Description: mark an existing task as completed/uncompleted.
+Description: Mark an existing task as completed/uncompleted.
 
 Request body: An object representing the entire task (Content-Type: `application/json`), with a different value in the "completed" flag.
 ```
@@ -160,5 +160,20 @@ Request body: An object representing the entire task (Content-Type: `application
 ```
 
 Response: Response: `200 OK` (success) or `503 Service Unavailable` (generic error). If the request body is not valid, `422 Unprocessable Entity` (validation error).
+
+Response body: _None_
+
+
+### __Delete task__
+
+URL: `api/task/delete/<id>`
+
+Method: DELETE
+
+Description: Delete an existing task, identified by its id.
+
+Request body: _None_
+
+Response: `204 No Content` (success) or `503 Service Unavailable` (generic error).
 
 Response body: _None_
