@@ -39,6 +39,19 @@ function filterToParameters(filterName, startDate, endDate) {
   return defaultDict;
 }
 
+const compareTasks = (task1, task2) => {
+  let temp1 = task1;
+  delete temp1.id;
+  delete temp1.completed;
+  let temp2 = task2;
+  delete temp1.id;
+  delete temp1.completed;
+  if(temp1===temp2){
+    return true;
+  }
+  return false;
+};
+
 const PORT = 3001;
 
 app = new express();
@@ -86,13 +99,13 @@ app.get("/api/tasks", (req, res) => {
 //GET /api/tasks/:id
 app.get('/api/tasks/:id', (req, res) => {
 
-    dao.getTaskById(  req.params.id  )
+  dao.getTaskById(req.params.id)
     .then(exam => res.json(exam))
     .catch((err) => {
-        if(err.code == 404){
-            res.status(404).json(err);
-        }
-        res.status(500).end();
+      if (err.code == 404) {
+        res.status(404).json(err);
+      }
+      res.status(500).end();
     });
 });
 
@@ -105,8 +118,8 @@ app.post('/api/tasks', [
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-      return res.status(422).json({errors: errors.array()});
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
     try {
       //await dao.updateExam(examToUpdate);
@@ -116,74 +129,66 @@ app.post('/api/tasks', [
     } catch (err) {
       res.status(503).json({ error: `Database error while adding the task: ${err}` });
     }
-});
+  });
 
 
 //update an existing task
-app.put("api/tasks/update",[
-    check('description').exists(),
-    check('deadline').if(deadline => deadline).isISO8601().toDate(),
-    check('private').isBoolean(),
-    check('important').isBoolean(),
-    check('completed').isBoolean()], async (req,res) => {
+app.put("api/tasks/update", [
+  check('description').exists(),
+  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('private').isBoolean(),
+  check('important').isBoolean(),
+  check('completed').isBoolean()], async (req, res) => {
     const errores = validationResult(req);
-    if(!errors.isEmpty()){
-        res.status(422).json({errors: errors.array()});
+    if (!errors.isEmpty()) {
+      res.status(422).json({ errors: errors.array() });
     }
-    try{
-        const task = req.body;
-        await dao.updateTask(task);
-        return res.status(200).end();
+    try {
+      const task = req.body;
+      await dao.updateTask(task);
+      return res.status(200).end();
     }
-    catch(err){
-        res.status(503).json({error:`Database error during the update of the task ${task}`});
+    catch (err) {
+      res.status(503).json({ error: `Database error during the update of the task ${task}` });
     }
-});
+  });
 
 
 //mark a task as completed/uncompleted
 app.put("api/tasks/update/mark", [
-    check('description').exists(),
-    check('deadline').if(deadline => deadline).isISO8601().toDate(),
-    check('private').isBoolean(),
-    check('important').isBoolean(),
-    check('completed').isBoolean()], async (req,res) => {
+  check('description').exists(),
+  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('private').isBoolean(),
+  check('important').isBoolean(),
+  check('completed').isBoolean()], async (req, res) => {
     const errores = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(422).json({errors: errors.array()});
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
-    try{
-        const task = req.body;
-        const existingTask = await dao.getTaskById(task.id);
-        if(compareTasks(task, existingTask)){
-            await dao.updateTask(task);
-            res.status(200).end();
-        }
-        res.status(400).json({error:"All fields of the task must be unchanged, except for the completed/uncompleted flag"});
+    try {
+      const task = req.body;
+      const existingTask = await dao.getTaskById(task.id);
+      if (compareTasks(task, existingTask)) {
+        await dao.updateTask(task);
+        res.status(200).end();
+      }
+      else {
+        res.status(400).json({ error: "All fields of the task must be unchanged, except for the completed/uncompleted flag" });
+      }
     }
-    catch(err){
-        res.status(503).json({error:`Database error during the marking of the task ${task}`});
+    catch (err) {
+      res.status(503).json({ error: `Database error during the marking of the task ${task}` });
     }
-});
+  });
 
-const compareTasks = (task1, task2) => {
-    if(task1.description!==task2.description || 
-       task1.important!==task2.important ||
-       task1.private!==task2.private ||
-       task1.deadline!==task2.deadline ||
-       task1.user!==task2.user) {
-        return false;
-    }
-    return true;
-};
 
-app.delete('api/tasks/delete/:id', [], (req,res) => {
-  try{
+app.delete('api/tasks/delete/:id', (req, res) => {
+  try {
     await dao.deleteTask(req.params.id);
     res.status(204).end();
   }
-  catch(err){
-    res.status(503).json({error:`Database error during deletion of task ${req.params.id}`});
+  catch (err) {
+    res.status(503).json({ error: `Database error during deletion of task ${req.params.id}` });
   }
 });
 
