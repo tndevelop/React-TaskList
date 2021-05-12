@@ -3,6 +3,8 @@ const morgan = require("morgan"); // logging middleware
 const { check, query, validationResult } = require("express-validator"); // validation middleware
 const dao = require("./dao"); // module for accessing the DB
 const dayjs = require("dayjs");
+const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(isSameOrAfter);
 const { response } = require('express');
 
 /*id,description,important, private, deadline, complete, user */
@@ -109,7 +111,7 @@ app.get('/api/tasks/:id', (req, res) => {
 //add a new task
 app.post('/api/tasks', [
   check('description').exists(),
-  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('deadline').if(deadline => deadline).custom((deadline) => Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")),
   check('private').isBoolean(),
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
@@ -131,7 +133,7 @@ app.post('/api/tasks', [
 //update an existing task
 app.put("api/tasks/update", [
   check('description').exists(),
-  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('deadline').if(deadline => deadline).custom((deadline) => Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")),
   check('private').isBoolean(),
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
@@ -153,7 +155,7 @@ app.put("api/tasks/update", [
 //mark a task as completed/uncompleted
 app.put("api/tasks/update/mark", [
   check('description').exists(),
-  check('deadline').if(deadline => deadline).isISO8601().toDate(),
+  check('deadline').if(deadline => deadline).custom((deadline) => Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")),
   check('private').isBoolean(),
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
