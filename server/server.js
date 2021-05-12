@@ -82,6 +82,21 @@ app.get("/api/tasks", (req, res) => {
     .catch(() => res.status(500).end());
 });
 
+
+//GET /api/tasks/:id
+app.get('/api/tasks/:id', (req, res) => {
+
+    dao.getTaskById(  req.params.id  )
+    .then(exam => res.json(exam))
+    .catch((err) => {
+        if(err.code == 404){
+            res.status(404).json(err);
+        }
+        res.status(500).end();
+    });
+});
+
+
 //add a new task
 app.post('/api/tasks', [
   check('description').exists(),
@@ -161,19 +176,3 @@ const compareTasks = (task1, task2) => {
     }
     return true;
 };
-
-
-
-//GET /api/tasks/:id
-app.get('/api/tasks/:id', (req, res) => {
-
-    dao.getTaskById(  req.params.id  )
-    .then(exam => res.json(exam))
-    .catch((err) => {
-        if(err.code == 404){
-            res.status(404).json(err);
-        }
-        res.status(500).end();
-    });
-});
-
