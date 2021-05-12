@@ -4,8 +4,8 @@
 
 Team members:
 * s281879 MARSIANO JONATHAN
-* s123456 LASTNAME FIRSTNAME 
-* s123456 LASTNAME FIRSTNAME
+* s282478 NATTA TOMMASO
+* s281933 ORLANDO LUCA
 * s123456 LASTNAME FIRSTNAME (delete line if not needed)
 
 ## Instructions
@@ -30,6 +30,86 @@ Provide a short description for API with the required parameters, follow the pro
 * [Sample request, with body (if any)]
 * [Sample response, with body (if any)]
 * [Error responses, if any]
+
+### __List all tasks__
+
+URL: `/api/tasks`
+
+HTTP Method: GET
+
+Description: Get all tasks of the task list.
+
+Request body: _None_
+
+Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
+
+Response body:
+```
+[
+	{
+		"id": 2,
+		"description": "Go for a walk",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-04-14 08:30"
+	},
+	{
+		"id": 4,
+		"description": "Watch the Express videolecture",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-05-24 09:00"
+	}
+    ...
+]
+```
+
+
+### __Get task by id__
+
+URL: `/api/tasks/:id`
+
+HTTP Method: GET
+
+Description: Get a single task of the list given it's id.
+
+Request body: _None_
+
+Response: `200 OK` (success) or `500 Internal Server Error` (generic error) or `404 Not Found` (wrong code)
+
+Response body:
+```
+{
+	"id": 2,
+	"description": "Go for a walk",
+	"important": 1,
+	"private": 1,
+	"deadline": "2021-04-14 08:30"
+}
+```
+
+### __Create a new task__
+
+ URL: `/api/tasks`
+
+ HTTP Method: POST
+
+ Description: Insert a new task
+
+ Request body: An object that represents a task(Content-type: `Application/json`)
+```
+{
+    "description": "eat lunch",
+    "deadline": "2021-07-22 12:45",
+    "important": 1,
+    "private": 0,
+    "completed": 0
+
+}
+```
+Request body: _None_
+
+Response: `200 OK` (success) or `503 generic error` or `422 Unprocessable Entity` 
 
 
 ### __Update task__
