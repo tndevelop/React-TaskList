@@ -6,7 +6,7 @@ Team members:
 * s281879 MARSIANO JONATHAN
 * s282478 NATTA TOMMASO
 * s281933 ORLANDO LUCA
-* s123456 LASTNAME FIRSTNAME (delete line if not needed)
+* s290144 REGE CAMBRIN DANIELE
 
 ## Instructions
 
@@ -44,7 +44,7 @@ Request body: _None_
 Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
 
 Response body:
-```
+```json
 [
 	{
 		"id": 2,
@@ -64,8 +64,39 @@ Response body:
 ]
 ```
 
+### __Filter tasks__
 
-### __Get task by id__
+URL: `/api/task?filter=filterName&startDate=startDate&endDate=endDate`
+
+HTTP Method: GET
+
+Description: Get all task that satisfy constraints of `filterName` and whose `deadline` are between `startDate` and `endDate` . Query parameters are optional.
+
+Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
+
+Response body:
+
+```json
+[
+    {
+		"id": 2,
+		"description": "Go for a walk",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-04-14 08:30"
+    },
+    {
+        "id": 4,
+		"description": "Watch the Express videolecture",
+		"important": 1,
+		"private": 1,
+		"deadline": "2021-05-24 09:00"
+    }
+    ...
+]
+```
+
+__Get task by id__
 
 URL: `/api/tasks/:id`
 
