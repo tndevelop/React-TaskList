@@ -107,9 +107,9 @@ Response body:
 
 }
 ```
-Request body: _None_
-
 Response: `200 OK` (success) or `503 generic error` or `422 Unprocessable Entity` 
+
+Response body: _None_
 
 
 ### __Update task__

@@ -1,7 +1,4 @@
 const express = require('express');
-const dao = require("./dao");
-const { check, validationResult } = require('express-validator');
-const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const { check, query, validationResult } = require("express-validator"); // validation middleware
 const dao = require("./dao"); // module for accessing the DB
@@ -52,8 +49,7 @@ const compareTasks = (task1, task2) => {
   return false;
 };
 
-const PORT = 3001;
-
+const PORT = 3002;
 app = new express();
 
 app.listen(PORT, () =>
@@ -182,7 +178,7 @@ app.put("api/tasks/update/mark", [
   });
 
 
-app.delete('api/tasks/delete/:id', (req, res) => {
+app.delete('api/tasks/delete/:id', async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
     res.status(204).end();
@@ -191,5 +187,3 @@ app.delete('api/tasks/delete/:id', (req, res) => {
     res.status(503).json({ error: `Database error during deletion of task ${req.params.id}` });
   }
 });
-
-ExtensionScriptApis.delete
