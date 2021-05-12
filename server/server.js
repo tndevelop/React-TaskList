@@ -104,9 +104,18 @@ app.post('/api/tasks', [
 
 
 //update an existing exam
-app.put("api/tasks/update/:id", async (req,res) => {
-    const task = req.body;
+app.put("api/tasks/update/:id",[
+    check('description').exists(),
+    check('deadline').if(deadline => deadline).isISO8601().toDate(),
+    check('private').isBoolean(),
+    check('important').isBoolean(),
+    check('completed').isBoolean()], async (req,res) => {
+    const errores = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({errors: errors.array()});
+    }
     try{
+        const task = req.body;
         await dao.updateTask(task);
         res.status(200).end();
     }
