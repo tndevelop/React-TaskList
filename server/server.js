@@ -38,17 +38,29 @@ function filterToParameters(filterName, startDate, endDate) {
   return defaultDict;
 }
 
-const compareTasks = (task1, task2) => {
+const compareTasks = (taskReq, taskDB) => {
+  /*
   let temp1 = task1;
   delete temp1.id;
   delete temp1.completed;
   let temp2 = task2;
-  delete temp1.id;
-  delete temp1.completed;
-  if(temp1===temp2){
-    return true;
+  delete temp2.id;
+  delete temp2.completed;
+  console.log(temp1);
+  console.log(temp2);
+  */
+  equal_values = true;
+  for(key in taskDB) {   
+    if(key == "completed" || taskReq[key] == taskDB[key]) {
+        continue;
+    }
+    else {
+        equal_values = false;
+        break;
+    }
   }
-  return false;
+  return equal_values;
+
 };
 
 const PORT = 3002;
@@ -131,40 +143,41 @@ app.post('/api/tasks', [
 
 
 //update an existing task
-app.put("api/tasks/update", [
+app.put("/api/tasks/update", [
   check('description').exists(),
   check('deadline').if(deadline => deadline).custom((deadline) => Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")),
   check('private').isBoolean(),
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
-    const errores = validationResult(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(422).json({ errors: errors.array() });
     }
+    const task = req.body;
     try {
-      const task = req.body;
       await dao.updateTask(task);
       return res.status(200).end();
     }
     catch (err) {
-      res.status(503).json({ error: `Database error during the update of the task ${task}` });
+      res.status(503).json({ error: `Database error during the update of the task ${task}, error: ${err}` });
     }
   });
 
 
 //mark a task as completed/uncompleted
-app.put("api/tasks/update/mark", [
+app.put("/api/tasks/update/mark", [
   check('description').exists(),
   check('deadline').if(deadline => deadline).custom((deadline) => Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")),
   check('private').isBoolean(),
   check('important').isBoolean(),
   check('completed').isBoolean()], async (req, res) => {
-    const errores = validationResult(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
+    const task = req.body;
     try {
-      const task = req.body;
+      
       const existingTask = await dao.getTaskById(task.id);
       if (compareTasks(task, existingTask)) {
         await dao.updateTask(task);
@@ -180,7 +193,7 @@ app.put("api/tasks/update/mark", [
   });
 
 
-app.delete('api/tasks/delete/:id', async (req, res) => {
+app.delete('/api/tasks/delete/:id', async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
     res.status(204).end();
