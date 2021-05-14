@@ -20,7 +20,7 @@ exports.listTasks = () => {
                 reject(err);
                 return;
             }
-            const courses = rows.map((t) => ({ id: t.id, description: t.description, important: t.important, private: t.private, deadline: t.deadline }));
+            const courses = rows.map((t) => ({ id: t.id, description: t.description, important: t.important, private: t.private, deadline: t.deadline , completed:  row.completed, user : row.user }));
             resolve(courses);
         });
     });
@@ -38,7 +38,7 @@ exports.getTaskById = (id) => {
             if (row == undefined) {
                 reject({ error: 'Task not found.' , code : 404});
             } else {
-                const task = { id: row.id, description: row.description, important: row.important, private: row.private, deadline: row.deadline };
+                const task = { id: row.id, description: row.description, important: row.important, private: row.private, deadline: row.deadline, completed:  row.completed, user : row.user };
                 resolve(task);
             }
         });
@@ -67,6 +67,8 @@ exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
         important: t.important,
         private: t.private,
         deadline: t.deadline,
+        completed:  t.completed, 
+        user : t.user
       }));
       resolve(courses);
     });
