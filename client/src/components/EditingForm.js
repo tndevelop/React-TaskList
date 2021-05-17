@@ -16,6 +16,9 @@ function AddEditForm(props) {
   const [isPrivate, setPrivate] = useState(
     props.task ? props.task.private : true
   );
+  const [isCompleted, setCompleted] = useState(
+    props.task ? props.task.completed : true
+  );
 
   /**
    * Check if description is not empty (only whitespaces not allowed)
@@ -35,12 +38,19 @@ function AddEditForm(props) {
   const submitChanges = (event) => {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
+    /*
     if (!props.task)
       props.createElement(description, isUrgent, isPrivate, date);
     else {
       props.delete(props.task);
       props.createElement(description, isUrgent, isPrivate, date);
     }
+    */
+    if(props.task)
+      props.delete(props.task);
+    props.createElement(description, isUrgent, isPrivate, date);
+    //props.createElement(description, isUrgent, isPrivate, date, isCompleted);
+
     props.setHideForm(true);
   };
 
@@ -101,6 +111,14 @@ function AddEditForm(props) {
                 label="is urgent?"
                 id="checkUrgent"
                 onChange={(event) => setUrgent(event.target.checked)}
+              />
+              <Form.Check
+                inline
+                type="checkbox"
+                checked={isCompleted}
+                label="is completed?"
+                id="checkCompleted"
+                onChange={(event) => setCompleted(event.target.checked)}
               />
             </Form.Group>
           </Form>

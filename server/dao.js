@@ -136,7 +136,7 @@ exports.updateTask = (task) => {
 //delete a task
 exports.deleteTask = (id) => {
   return new Promise((resolve, reject) => {
-    sql = "DELETE FROM tasks WHERE id=?";
+    const sql = "DELETE FROM tasks WHERE id=?";
     db.run(sql, [id], function (err) {
       if (err) {
         reject(err);
