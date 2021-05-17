@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavbar from "./components/MyNavbar";
@@ -9,11 +9,14 @@ import "./components/TaskList.js";
 import { List } from "./TaskListCreate";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
+import { fetchTasks } from './fileJS/API.js';
+import dayjs from 'dayjs';
 
 // create the task list and add the dummy tasks
 // id, description, urgent, private, deadline
 const DummyTaskList = new List();
-DummyTaskList.createElement("laundry", false, true);
+
+/*DummyTaskList.createElement("laundry", false, true);
 DummyTaskList.createElement(
   "monday lab",
   false,
@@ -28,12 +31,19 @@ DummyTaskList.createElement(
 );
 DummyTaskList.createElement("lab", true, false, "2021-07-04T15:20:00.000Z");
 DummyTaskList.createElement("study", false, true, "2021-07-10T15:20:00.000Z");
-
+*/
 function App() {
-  const [taskList, setTaskList] = useState(DummyTaskList.getList());
+  const [taskList, setTaskList] = useState([]); /*DummyTaskList.getList()*/
   const [addedTask, setAddedTask] = useState(false);
   const [filter, setFilter] = useState("All");
 
+  useEffect( async () => {
+    const tasks = await fetchTasks();
+    tasks.map(t => t.deadline = dayjs(t.deadline));
+    tasks.forEach(t => DummyTaskList.add(t));
+    setTaskList(DummyTaskList.getList());
+  }, [taskList]);
+  
   const addElementAndRefresh = (description, isUrgent, isPrivate, deadline) => {
     DummyTaskList.createElement(description, isUrgent, isPrivate, deadline);
     setTaskList(DummyTaskList.getList());

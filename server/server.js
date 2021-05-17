@@ -63,7 +63,7 @@ const compareTasks = (taskReq, taskDB) => {
 
 };
 
-const PORT = 3002;
+const PORT = 3001;
 app = new express();
 
 app.listen(PORT, () =>
