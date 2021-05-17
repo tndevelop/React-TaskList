@@ -3,6 +3,7 @@ import { FilterList } from "./MySide.js";
 import MainContent from "./MainContent";
 
 function CentralRow(props) {
+  const filters = ["All", "Private", "Important", "Next7", "Today"];
   return (
     <Row>
       <Col
@@ -12,7 +13,7 @@ function CentralRow(props) {
         id="left-sidebar"
       >
         <FilterList
-          selectedFilter={props.selectedFilter}
+          selectedFilter={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
           setFilter={props.setFilter}
         />
       </Col>
@@ -23,7 +24,7 @@ function CentralRow(props) {
         createElement={props.createElement}
         delete={props.delete}
         taskList={props.taskList}
-        selected={props.selectedFilter}
+        selected={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
         removeTask={props.removeTask}
       />
     </Row>
