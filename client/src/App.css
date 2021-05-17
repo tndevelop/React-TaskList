@@ -1,38 +1,69 @@
-.App {
-  text-align: center;
+.plusButton {
+  font-size: 4vh;
+  position: fixed;
+  right: 1vw;
+  bottom: 1vh;
+  z-index: 1030;
+  width: auto;
+  height: 8vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.trash:hover {
+  color: red;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.mainContainer {
+  height: 98vh;
 }
 
-.App-header {
-  background-color: #282c34;
+.pencil:hover {
+  color: orange;
+}
+
+/* Global */
+.vheight-100 {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.below-nav {
+  padding-top: 5rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Filters and projects */
+.list-group-item {
+  background-color: transparent !important;
 }
+
+.list-group-item.active {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+
+.list-group-item-action:hover {
+  background-color: #9becae !important;
+}
+
+.projects-title {
+  margin-top: 2rem;
+}
+
+/* Class for important tasks */
+.important {
+  color: red;
+}
+
+/* Add task button */
+.fixed-right-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  margin: 0 1.5rem 1.5rem 0;
+  border-radius: 50%;
+}
+
+.sidebar-left-padding {
+  padding-left: 2rem;
+}
+
+
