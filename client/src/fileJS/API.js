@@ -13,3 +13,5 @@ const fetchAddTask = async (task) => {
   });
   return response.status;
 };
+
+export { fetchTasks, fetchAddTask };
