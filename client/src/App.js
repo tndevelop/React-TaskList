@@ -50,8 +50,8 @@ function App() {
     setAddedTask(!addedTask);
   };
 
-  const setDone = (task, id, done) => {
-    task.setDone(id, done);
+  const setDone = (task, done) => {
+    task.setDone(done);
   };
 
   const removeTask = (task) => {

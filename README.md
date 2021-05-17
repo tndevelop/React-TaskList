@@ -3,10 +3,11 @@
 ## Team name: TEAM_NAME
 
 Team members:
-* s281879 MARSIANO JONATHAN
-* s282478 NATTA TOMMASO
-* s281933 ORLANDO LUCA
-* s290144 REGE CAMBRIN DANIELE
+
+- s281879 MARSIANO JONATHAN
+- s282478 NATTA TOMMASO
+- s281933 ORLANDO LUCA
+- s290144 REGE CAMBRIN DANIELE
 
 ## Instructions
 
@@ -25,13 +26,13 @@ Finally, remember to add the `final` tag for the final submission, otherwise it 
 
 Provide a short description for API with the required parameters, follow the proposed structure.
 
-* [HTTP Method] [URL, with any parameter]
-* [One-line about what this API is doing]
-* [Sample request, with body (if any)]
-* [Sample response, with body (if any)]
-* [Error responses, if any]
+- [HTTP Method] [URL, with any parameter]
+- [One-line about what this API is doing]
+- [Sample request, with body (if any)]
+- [Sample response, with body (if any)]
+- [Error responses, if any]
 
-### __List all tasks__
+### **List all tasks**
 
 URL: `/api/tasks`
 
@@ -44,6 +45,7 @@ Request body: _None_
 Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
 
 Response body:
+
 ```json
 [
 	{
@@ -64,13 +66,15 @@ Response body:
 ]
 ```
 
-### __Filter tasks__
+### **Filter tasks**
 
-URL: `/api/task?filter=filterName&startDate=startDate&endDate=endDate`
+URL: `/api/task?filter=<filterName>&startDate=<startDate>&endDate=<endDate>`
 
 HTTP Method: GET
 
-Description: Get all task that satisfy constraints of `filterName` and whose `deadline` are between `startDate` and `endDate` . Query parameters are optional.
+Description: Get all task that satisfy constraints of `filterName` and whose `deadline` are between `startDate` and `endDate`. Query parameters are optional.
+
+Request: `/api/task?filter=All&startDate=2020-01-01+00:00&endDate=2021-06-01+16:00`
 
 Response: `200 OK` (success) or `500 Internal Server Error` (generic error)
 
@@ -96,7 +100,7 @@ Response body:
 ]
 ```
 
-__Get task by id__
+**Get task by id**
 
 URL: `/api/tasks/:id`
 
@@ -109,6 +113,7 @@ Request body: _None_
 Response: `200 OK` (success) or `500 Internal Server Error` (generic error) or `404 Not Found` (wrong code)
 
 Response body:
+
 ```
 {
 	"id": 2,
@@ -119,15 +124,16 @@ Response body:
 }
 ```
 
-### __Create a new task__
+### **Create a new task**
 
- URL: `/api/tasks`
+URL: `/api/tasks`
 
- HTTP Method: POST
+HTTP Method: POST
 
- Description: Insert a new task
+Description: Insert a new task
 
- Request body: An object that represents a task(Content-type: `Application/json`)
+Request body: An object that represents a task(Content-type: `Application/json`)
+
 ```
 {
     "description": "eat lunch",
@@ -138,12 +144,12 @@ Response body:
 
 }
 ```
-Response: `200 OK` (success) or `503 generic error` or `422 Unprocessable Entity` 
+
+Response: `200 OK` (success) or `503 generic error` or `422 Unprocessable Entity`
 
 Response body: _None_
 
-
-### __Update task__
+### **Update task**
 
 URL: `api/tasks/update`
 
@@ -152,6 +158,7 @@ Method: PUT
 Description: Update entirely an existing task, identified by its id.
 
 Request body: An object representing the entire task (Content-Type: `application/json`)
+
 ```
 {
     "id":2
@@ -168,8 +175,7 @@ Response: `200 OK` (success) or `503 Service Unavailable` (generic error). If th
 
 Response body: _None_
 
-
-### __Mark a task__
+### **Mark a task**
 
 URL: `api/tasks/update/mark`
 
@@ -178,6 +184,7 @@ Method: PUT
 Description: Mark an existing task as completed/uncompleted.
 
 Request body: An object representing the entire task (Content-Type: `application/json`), with a different value in the "completed" flag.
+
 ```
 {
     "id":2
@@ -194,8 +201,7 @@ Response: Response: `200 OK` (success) or `503 Service Unavailable` (generic err
 
 Response body: _None_
 
-
-### __Delete task__
+### **Delete task**
 
 URL: `api/task/delete/<id>`
 
