@@ -5,13 +5,15 @@ function Task(
   description,
   isImportant = false,
   isPrivate = true,
-  deadline = false
+  deadline = false,
+  user = 1
 ) {
   this.id = id;
   this.description = description;
   this.important = isImportant;
   this.private = isPrivate;
-  this.done = false;
+  this.completed = false;
+  this.user = user;
   // saved as dayjs object
   if (deadline !== false && deadline !== "") {
     this.deadline = dayjs(deadline);
@@ -69,8 +71,8 @@ function Task(
     return ret;
   };
 
-  this.setDone = (id, done) => {
-    this.done = done;
+  this.setDone = (done) => {
+    this.completed = done;
   };
 }
 
