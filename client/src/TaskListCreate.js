@@ -1,37 +1,40 @@
 import dayjs from "dayjs";
 
-function Task(
-  id,
-  description,
-  isImportant = false,
-  isPrivate = true,
-  deadline = false,
-  user = 1
-) {
-  this.id = id;
-  this.description = description;
-  this.important = isImportant;
-  this.private = isPrivate;
-  this.completed = false;
-  this.user = user;
-  // saved as dayjs object
-  if (deadline !== false && deadline !== "") {
-    this.deadline = dayjs(deadline);
+class Task {
+  constructor(
+    id,
+    description,
+    isImportant = false,
+    isPrivate = true,
+    deadline = false,
+    user = 1
+  ) {
+    this.id = id;
+    this.description = description;
+    this.important = isImportant;
+    this.private = isPrivate;
+    this.completed = false;
+    this.user = user;
+    // saved as dayjs object
+    if (deadline !== false && deadline !== "") {
+      this.deadline = dayjs(deadline);
+    }
   }
-  this._formatDeadline = (format) => {
+
+  _formatDeadline = (format) => {
     return this.deadline ? this.deadline.format(format) : "<not defined>";
   };
 
   //Filters
-  this.isImportant = () => {
+  isImportant = () => {
     return this.important;
   };
 
-  this.isPrivate = () => {
+  isPrivate = () => {
     return this.private;
   };
 
-  this.isToday = () => {
+  isToday = () => {
     const comparisonTemplate = "YYYY-MM-DD";
     const now = dayjs();
     return (
@@ -41,7 +44,7 @@ function Task(
     );
   };
 
-  this.isYesterday = () => {
+  isYesterday = () => {
     const comparisonTemplate = "YYYY-MM-DD";
     const yesterday = dayjs().subtract(1, "day");
     return (
@@ -51,7 +54,7 @@ function Task(
     );
   };
 
-  this.isTomorrow = () => {
+  isTomorrow = () => {
     const comparisonTemplate = "YYYY-MM-DD";
     const tomorrow = dayjs().add(1, "day");
     return (
@@ -61,7 +64,7 @@ function Task(
     );
   };
 
-  this.isNextWeek = () => {
+  isNextWeek = () => {
     const tomorrow = dayjs().add(1, "day");
     const nextWeek = dayjs().add(7, "day");
     const ret =
@@ -71,7 +74,7 @@ function Task(
     return ret;
   };
 
-  this.setDone = (done) => {
+  setDone = (done) => {
     this.completed = done;
   };
 }
@@ -102,7 +105,6 @@ function List() {
   this.remove = (task) => {
     this.list = this.list.filter((t) => t.id !== task.id);
   };
-  
 
   this.getList = () => this.list.filter((t) => true);
 }

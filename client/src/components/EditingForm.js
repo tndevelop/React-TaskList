@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { fetchAddTask } from "../fileJS/API.js";
+import { Task } from "../TaskListCreate.js";
 
 dayjs.extend(isSameOrAfter);
+
 function AddEditForm(props) {
   //Task paramaters
   const [date, setDate] = useState(props.task ? props.task.deadline : dayjs());
@@ -46,9 +49,14 @@ function AddEditForm(props) {
       props.createElement(description, isUrgent, isPrivate, date);
     }
     */
-    if(props.task)
-      props.delete(props.task);
+    if (props.task) props.delete(props.task);
+    debugger;
+    fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+
+    /* DEPRECATED
     props.createElement(description, isUrgent, isPrivate, date);
+    */
+
     //props.createElement(description, isUrgent, isPrivate, date, isCompleted);
 
     props.setHideForm(true);
