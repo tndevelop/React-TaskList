@@ -41,14 +41,6 @@ function AddEditForm(props) {
   const submitChanges = (event) => {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
-    /*
-    if (!props.task)
-      props.createElement(description, isUrgent, isPrivate, date);
-    else {
-      props.delete(props.task);
-      props.createElement(description, isUrgent, isPrivate, date);
-    }
-    */
     if (props.task) props.delete(props.task);
     debugger;
     fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));

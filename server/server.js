@@ -39,16 +39,6 @@ function filterToParameters(filterName, startDate, endDate) {
 }
 
 const compareTasks = (taskReq, taskDB) => {
-  /*
-  let temp1 = task1;
-  delete temp1.id;
-  delete temp1.completed;
-  let temp2 = task2;
-  delete temp2.id;
-  delete temp2.completed;
-  console.log(temp1);
-  console.log(temp2);
-  */
   equal_values = true;
   for (key in taskDB) {
     if (key == "completed" || taskReq[key] == taskDB[key]) {
