@@ -1,5 +1,5 @@
 {
-  "proxy": "http://localhost:3002",
+  "proxy": "http://localhost:3001",
   "name": "biglab1",
   "version": "0.1.0",
   "private": true,

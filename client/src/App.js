@@ -37,18 +37,26 @@ function App() {
   const [addedTask, setAddedTask] = useState(false);
   const [filter, setFilter] = useState("All");
 
-  useEffect( async () => {
+  useEffect( () => {
+   const getTasks = async() => {
     const tasks = await fetchTasks();
-    tasks.map(t => t.deadline = dayjs(t.deadline));
-    tasks.forEach(t => DummyTaskList.add(t));
-    setTaskList(DummyTaskList.getList());
-  }, [taskList]);
+    tasks.map(t => t.deadline = t.deadline ? dayjs(t.deadline) : "" );
+    //tasks.forEach(t => DummyTaskList.add(t));
+    //setTaskList(DummyTaskList.getList());
+    setTaskList(tasks);
+
+   }
+   getTasks();
+  }, []);
+  
   
   const addElementAndRefresh = (description, isUrgent, isPrivate, deadline) => {
     DummyTaskList.createElement(description, isUrgent, isPrivate, deadline);
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
   };
+  
+  
 
   const setDone = (task, done) => {
     task.setDone(done);
