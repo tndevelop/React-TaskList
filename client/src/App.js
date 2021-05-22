@@ -60,6 +60,8 @@ function App() {
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
   };
+  
+  
 
   const setDone = (task, done) => {
     task.setDone(done);
