@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { fetchAddTask } from "../fileJS/API.js";
+import { Task } from "../TaskListCreate.js";
 
 dayjs.extend(isSameOrAfter);
+
 function AddEditForm(props) {
   //Task paramaters
   const [date, setDate] = useState(props.task ? props.task.deadline : dayjs());
@@ -15,6 +18,9 @@ function AddEditForm(props) {
   );
   const [isPrivate, setPrivate] = useState(
     props.task ? props.task.private : true
+  );
+  const [isCompleted, setCompleted] = useState(
+    props.task ? props.task.completed : true
   );
 
   /**
@@ -35,12 +41,16 @@ function AddEditForm(props) {
   const submitChanges = (event) => {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
-    if (!props.task)
-      props.createElement(description, isUrgent, isPrivate, date);
-    else {
-      props.delete(props.task);
-      props.createElement(description, isUrgent, isPrivate, date);
-    }
+    if (props.task) props.delete(props.task);
+    debugger;
+    fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+
+    /* DEPRECATED
+    props.createElement(description, isUrgent, isPrivate, date);
+    */
+
+    //props.createElement(description, isUrgent, isPrivate, date, isCompleted);
+
     props.setHideForm(true);
   };
 
@@ -101,6 +111,14 @@ function AddEditForm(props) {
                 label="is urgent?"
                 id="checkUrgent"
                 onChange={(event) => setUrgent(event.target.checked)}
+              />
+              <Form.Check
+                inline
+                type="checkbox"
+                checked={isCompleted}
+                label="is completed?"
+                id="checkCompleted"
+                onChange={(event) => setCompleted(event.target.checked)}
               />
             </Form.Group>
           </Form>

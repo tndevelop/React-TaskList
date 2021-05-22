@@ -110,8 +110,6 @@ function App() {
                 createElement={addElementAndRefresh}
                 taskList={applyFilter(filter)}
                 removeTask={removeTask}
-                //setEditForm={setEditForm}//test
-                //showEditingForm={editForm}//test
               ></CentralRow>
             )}
           />
