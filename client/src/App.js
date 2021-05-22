@@ -45,10 +45,10 @@ function App() {
       tasks.map(t => t.deadline = dayjs(t.deadline)); //deadline from string to dayjs
       DummyTaskList.reset();
       tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
-      setTaskList(DummyTaskList.getList());    
+      setTaskList(DummyTaskList.getList());
     }
-    if(dirty) {
-      getTasks().then(()=> {
+    if (dirty) {
+      getTasks().then(() => {
         setLoading(false);
         setDirty(false);
       });
@@ -60,8 +60,8 @@ function App() {
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
   };
-  
-  
+
+
 
   const setDone = (task, done) => {
     task.setDone(done);
@@ -100,33 +100,41 @@ function App() {
             exact
             path="/:selectedFilter"
             render={({ match }) => {
-                setDirty(true);
-                return (
-                <CentralRow
-                selectedFilter={match.params.selectedFilter}
-                setFilter={setFilter}
-                setDone={setDone}
-                createElement={addElementAndRefresh}
-                taskList={applyFilter(match.params.selectedFilter)}
-                removeTask={removeTask}
-              ></CentralRow> );
-            }}
-          />
+              setDirty(true);
+              if (loading) {
+                return (<p>Please wait, loading your tasks...</p>);
+              }
+              else {
+                return (<CentralRow
+                  selectedFilter={match.params.selectedFilter}
+                  setFilter={setFilter}
+                  setDone={setDone}
+                  createElement={addElementAndRefresh}
+                  taskList={applyFilter(match.params.selectedFilter)}
+                  removeTask={removeTask}
+                ></CentralRow>);
+              }
+            }} />
           <Route
             exact
             path="/"
             render={() => {
               setDirty(true);
-              return(<CentralRow
-                selectedFilter={"All"}
-                setFilter={setFilter}
-                setDone={setDone}
-                createElement={addElementAndRefresh}
-                taskList={applyFilter(filter)}
-                removeTask={removeTask}
-              ></CentralRow>);
+              if (loading) {
+                return (<p id="loading">Please wait, loading your tasks...</p>);
+              }
+              else {
+                return (<CentralRow
+                  selectedFilter={"All"}
+                  setFilter={setFilter}
+                  setDone={setDone}
+                  createElement={addElementAndRefresh}
+                  taskList={applyFilter(filter)}
+                  removeTask={removeTask}
+                ></CentralRow>);
+              }
             }
-          }
+            }
           />
         </Switch>
       </Container>

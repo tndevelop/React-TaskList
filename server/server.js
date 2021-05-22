@@ -68,15 +68,15 @@ app.get("/api/tasks", (req, res) => {
   const startDateFilter = req.query.startDate;
   const endDateFilter = req.query.endDate;
   const params = filterToParameters(filter, startDateFilter, endDateFilter);
-  dao
+  setTimeout(() => dao
     .filteredTasks(
       params.important,
       params.private,
       params.startDeadline,
       params.endDeadline
     )
-    .then((exams) => res.json(exams))
-    .catch(() => res.status(500).end());
+    .then((tasks) => res.json(tasks))
+    .catch(() => res.status(500).end()), 3000);
 });
 
 //GET /api/tasks/:id
