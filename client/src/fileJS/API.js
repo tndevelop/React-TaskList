@@ -18,4 +18,5 @@ const fetchAddTask = async (task) => {
   return response.status;
 };
 
-export { fetchAddTask, fetchTasks };
+const API = { fetchAddTask, fetchTasks };
+export default API;

@@ -7,13 +7,14 @@ class Task {
     isImportant = false,
     isPrivate = true,
     deadline = false,
+    completed = false,
     user = 1
   ) {
     this.id = id;
     this.description = description;
     this.important = isImportant;
     this.private = isPrivate;
-    this.completed = false;
+    this.completed = completed;
     this.user = user;
     // saved as dayjs object
     if (deadline !== false && deadline !== "") {
@@ -83,6 +84,11 @@ function List() {
   this.list = [];
   this.count = 0;
 
+  this.reset = () => {
+    this.list = [];
+    this.count = 0;
+  }
+
   this.createElement = (description, isUrgent, isPrivate, deadline) => {
     const task = new Task(
       this.count,
@@ -96,11 +102,26 @@ function List() {
     return this;
   };
 
+  this.createElementFromServer = (id, description, isUrgent, isPrivate, deadline, completed, user) => {
+    const task = new Task(
+      id,
+      description,
+      isUrgent,
+      isPrivate,
+      deadline,
+      completed,
+      user
+    );
+    this.add(task);
+    return this;
+  };
+
   this.add = (task) => {
     if (!this.list.some((t) => t.id === task.id))
       this.list = [...this.list, task];
     else throw new Error("Duplicate id");
   };
+
 
   this.remove = (task) => {
     this.list = this.list.filter((t) => t.id !== task.id);

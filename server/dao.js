@@ -8,7 +8,7 @@ const db = new sqlite.Database("tasks.db", (err) => {
   if (err) throw err;
 });
 
-// get all courses
+// get all tasks
 exports.listTasks = () => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM tasks";

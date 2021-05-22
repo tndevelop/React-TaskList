@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import { fetchAddTask } from "../fileJS/API.js";
+import API from '../fileJS/API.js';
 import { Task } from "../TaskListCreate.js";
 
 dayjs.extend(isSameOrAfter);
@@ -43,7 +43,7 @@ function AddEditForm(props) {
     if (!validDescription() || !validDeadline()) return;
     if (props.task) props.delete(props.task);
     debugger;
-    fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+    API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
 
     /* DEPRECATED
     props.createElement(description, isUrgent, isPrivate, date);

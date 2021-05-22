@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import React from "react";
 import { useState, useEffect } from "react";
 import "./App.css";
@@ -9,7 +9,7 @@ import "./components/TaskList.js";
 import { List } from "./TaskListCreate";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
-import { fetchTasks } from './fileJS/API.js';
+import API from './fileJS/API.js';
 import dayjs from 'dayjs';
 
 // create the task list and add the dummy tasks
@@ -36,14 +36,25 @@ function App() {
   const [taskList, setTaskList] = useState([]); /*DummyTaskList.getList()*/
   const [addedTask, setAddedTask] = useState(false);
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [dirty, setDirty] = useState(true);
 
-  useEffect( async () => {
-    const tasks = await fetchTasks();
-    tasks.map(t => t.deadline = dayjs(t.deadline));
-    tasks.forEach(t => DummyTaskList.add(t));
-    setTaskList(DummyTaskList.getList());
-  }, [taskList]);
-  
+  useEffect(() => {
+    const getTasks = async () => {
+      const tasks = await API.fetchTasks();
+      tasks.map(t => t.deadline = dayjs(t.deadline)); //deadline from string to dayjs
+      DummyTaskList.reset();
+      tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
+      setTaskList(DummyTaskList.getList());    
+    }
+    if(dirty) {
+      getTasks().then(()=> {
+        setLoading(false);
+        setDirty(false);
+      });
+    }
+  }, [dirty]);
+
   const addElementAndRefresh = (description, isUrgent, isPrivate, deadline) => {
     DummyTaskList.createElement(description, isUrgent, isPrivate, deadline);
     setTaskList(DummyTaskList.getList());
@@ -87,31 +98,33 @@ function App() {
             exact
             path="/:selectedFilter"
             render={({ match }) => {
-              return (
+                setDirty(true);
+                return (
                 <CentralRow
-                  selectedFilter={match.params.selectedFilter}
-                  setFilter={setFilter}
-                  setDone={setDone}
-                  createElement={addElementAndRefresh}
-                  taskList={applyFilter(match.params.selectedFilter)}
-                  removeTask={removeTask}
-                ></CentralRow>
-              );
+                selectedFilter={match.params.selectedFilter}
+                setFilter={setFilter}
+                setDone={setDone}
+                createElement={addElementAndRefresh}
+                taskList={applyFilter(match.params.selectedFilter)}
+                removeTask={removeTask}
+              ></CentralRow> );
             }}
           />
           <Route
             exact
             path="/"
-            render={() => (
-              <CentralRow
+            render={() => {
+              setDirty(true);
+              return(<CentralRow
                 selectedFilter={"All"}
                 setFilter={setFilter}
                 setDone={setDone}
                 createElement={addElementAndRefresh}
                 taskList={applyFilter(filter)}
                 removeTask={removeTask}
-              ></CentralRow>
-            )}
+              ></CentralRow>);
+            }
+          }
           />
         </Switch>
       </Container>
