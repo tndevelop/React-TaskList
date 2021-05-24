@@ -35,30 +35,37 @@ DummyTaskList.createElement("study", false, true, "2021-07-10T15:20:00.000Z");
 function App() {
   const [taskList, setTaskList] = useState([]); /*DummyTaskList.getList()*/
   const [addedTask, setAddedTask] = useState(false);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("Undef");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
 
   useEffect(() => {
     const getTasks = async () => {
-      const tasks = await API.fetchTasks();
+      const tasks = await API.fetchTasks(filter);
       tasks.map(t => t.deadline = t.deadline ? dayjs(t.deadline) : ""); //deadline from string to dayjs
       DummyTaskList.reset();
       tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
       setTaskList(DummyTaskList.getList());
     }
-    if (dirty) {
+    if (dirty && filter!="undef") {
       getTasks().then(() => {
         setLoading(false);
         setDirty(false);
+        
       });
     }
-  }, [dirty]);
+  }, [dirty, filter]);
 
-  const addElementAndRefresh = (description, isUrgent, isPrivate, deadline) => {
-    DummyTaskList.createElement(description, isUrgent, isPrivate, deadline);
+  const addElementAndRefresh = (description, isUrgent, isPrivate, deadline, isCompleted, status) => {
+    DummyTaskList.createElement(description, isUrgent, isPrivate, deadline, isCompleted, status);
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
+  };
+
+  const deleteLocal = (task) => {
+    DummyTaskList.remove(task);
+    setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
+
   };
 
 
@@ -102,18 +109,34 @@ function App() {
             exact
             path="/:selectedFilter"
             render={({ match }) => {
-              setDirty(true);
-              if (loading) {
-                return (<p>Please wait, loading your tasks...</p>);
+              
+              const filters = ["All", "Private", "Important", "Next7Days", "Today"];
+              if (!filters.includes(match.params.selectedFilter)) {
+                setFilter("All");
               }
+              else {
+                setFilter(match.params.selectedFilter);
+              }
+  
+              //setDirty(true);
+              //debugger;
+              
+              if (loading) {
+                return (<p id="loading">Please wait, loading your tasks...</p>);
+              }
+              
               else {
                 return (<CentralRow
                   selectedFilter={match.params.selectedFilter}
                   setFilter={setFilter}
                   setDone={setDone}
                   createElement={addElementAndRefresh}
-                  taskList={applyFilter(match.params.selectedFilter)}
+                  //taskList={applyFilter(match.params.selectedFilter)}
+                  taskList={taskList}
                   removeTask={removeTask}
+                  setDirty={setDirty}
+                  setLoading={setLoading}
+                  deleteLocal={deleteLocal}
                 ></CentralRow>);
               }
             }} />
@@ -131,8 +154,12 @@ function App() {
                   setFilter={setFilter}
                   setDone={setDone}
                   createElement={addElementAndRefresh}
-                  taskList={applyFilter(filter)}
+                  //taskList={applyFilter(filter)}
+                  taskList={taskList}
                   removeTask={removeTask}
+                  setDirty={setDirty}
+                  setLoading={setLoading}
+                  deleteLocal={deleteLocal}
                 ></CentralRow>);
               }
             }

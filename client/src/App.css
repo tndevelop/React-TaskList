@@ -30,9 +30,11 @@
 }
 
 /* Filters and projects */
+/*
 .list-group-item {
   background-color: transparent !important;
 }
+*/
 
 .list-group-item.active {
   background-color: #28a745 !important;

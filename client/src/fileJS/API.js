@@ -1,7 +1,7 @@
 import { Task } from "../TaskListCreate";
 
-const fetchTasks = async () => {
-  const response = await fetch("/api/tasks");
+const fetchTasks = async (filter) => {
+  const response = await fetch(`/api/tasks?filter=${filter}`);
   const responseBody = await response.json();
   return responseBody;
 };

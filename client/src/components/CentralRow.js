@@ -3,7 +3,8 @@ import { FilterList } from "./MySide.js";
 import MainContent from "./MainContent";
 
 function CentralRow(props) {
-  const filters = ["All", "Private", "Important", "Next7", "Today"];
+  
+  const filters = ["All", "Private", "Important", "Next7Days", "Today"];
   return (
     <Row>
       <Col
@@ -14,7 +15,10 @@ function CentralRow(props) {
       >
         <FilterList
           selectedFilter={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
+          //selectedFilter={props.selectedFilter}
           setFilter={props.setFilter}
+          setLoading={props.setLoading}
+          setDirty={props.setDirty}
         />
       </Col>
       <MainContent
@@ -25,7 +29,10 @@ function CentralRow(props) {
         //delete={props.delete}
         taskList={props.taskList}
         selected={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
+        //selected={props.selectedFilter}
         removeTask={props.removeTask}
+        setDirty={props.setDirty}
+        deleteLocal={props.deleteLocal}
       />
     </Row>
   );

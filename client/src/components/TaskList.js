@@ -9,7 +9,7 @@ function TaskList(props) {
     <ListGroup variant="flush">
       {props.taskList.map((t, index) => {
         return (
-          <ListGroup.Item key={t.id} index={t.id}>
+          <ListGroup.Item key={t.id} index={t.id} variant={t.status}>
             <Row>
               <Description
                 task={t}
@@ -21,11 +21,15 @@ function TaskList(props) {
               />
               <Shared private={t.private}></Shared>
               <Deadline deadline={t.deadline}></Deadline>
-              <Actions
-                removeTask={props.removeTask}
-                setTaskToModify={props.setTaskToModify}
-                task={t}
-              ></Actions>
+              {
+              t.status ? ""
+               : <Actions
+               removeTask={props.removeTask}
+               setTaskToModify={props.setTaskToModify}
+               task={t}
+             ></Actions>
+              
+               }
             </Row>
           </ListGroup.Item>
         );

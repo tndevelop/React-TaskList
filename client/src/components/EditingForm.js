@@ -44,11 +44,16 @@ function AddEditForm(props) {
     //if (props.task) props.delete(props.task);
     
     if(props.task){
-      API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, 1));
+      //props.delete(props.task);
+      props.deleteLocal(props.task);
+      props.createElement(description, isUrgent, isPrivate, date, isCompleted, "warning");
+      API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, isCompleted));
     }
     else{
-      API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+      props.createElement(description, isUrgent, isPrivate, date, isCompleted, "success");
+      API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, isCompleted));
     }
+    props.setDirty(true);
 
     /* DEPRECATED
     props.createElement(description, isUrgent, isPrivate, date);

@@ -1,7 +1,7 @@
 import { ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const filterNames = ["All", "Important", "Today", "Next7", "Private"];
+const filterNames = ["All", "Important", "Today", "Next7Days", "Private"];
 
 function FilterList(props) {
   return (
@@ -14,6 +14,8 @@ function FilterList(props) {
             key={index}
             selectedFilter={name === props.selectedFilter}
             setFilter={props.setFilter}
+            setDirty={props.setDirty}
+            setLoading={props.setLoading}
           />
         </Link>
       ))}
@@ -27,7 +29,13 @@ function ItemSide(props) {
       {props.name}
     </ListGroup.Item>
   ) : (
-    <ListGroup.Item action onClick={() => props.setFilter(props.name)}>
+    <ListGroup.Item action onClick={() => {
+
+      props.setFilter(props.name);
+      props.setDirty(true);
+      props.setLoading(true);
+
+    }}>
       {props.name}
     </ListGroup.Item>
   );
