@@ -42,9 +42,13 @@ function AddEditForm(props) {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
     if (props.task) props.delete(props.task);
-    debugger;
-    API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
-
+    
+    if(props.task){
+      API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, 1));
+    }
+    else{
+      API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+    }
 
     /* DEPRECATED
     props.createElement(description, isUrgent, isPrivate, date);
