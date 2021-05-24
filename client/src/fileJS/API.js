@@ -7,16 +7,16 @@ const fetchTasks = async () => {
 };
 
 const fetchAddTask = async (task) => {
-  debugger;
   const response = await fetch("/api/tasks", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify(task),
+    body: JSON.stringify(task)
   });
   return response.status;
 };
+
 
 const deleteTask = async (task)  => {
   debugger;
@@ -41,5 +41,20 @@ const deleteTask = async (task)  => {
   
 };
 
-const API = { fetchAddTask, fetchTasks, deleteTask };
+
+
+const fetchUpdateTask = async (task) => {
+  const response = await fetch("api/tasks/update",
+  {
+    method:'PUT',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(task)
+  });
+  return response.status;
+};
+
+const API = { fetchAddTask, fetchTasks, fetchUpdateTask, deleteTask };
+
 export default API;

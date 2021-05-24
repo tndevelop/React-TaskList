@@ -22,6 +22,14 @@ function filterToParameters(filterName, startDate, endDate) {
     case "Important":
       defaultDict.important = 1;
       break;
+    case "Today":
+      defaultDict.startDeadline = dayjs().format("YYYY-MM-DD");
+      defaultDict.endDeadline = dayjs().add(1, "day").format("YYYY-MM-DD");
+      break;
+    case "Next7Days":
+      defaultDict.startDeadline = dayjs().format("YYYY-MM-DD");
+      defaultDict.endDeadline = dayjs().add(8, "day").format("YYYY-MM-DD");
+      break;
     default:
       break;
   }
@@ -68,15 +76,19 @@ app.get("/api/tasks", (req, res) => {
   const startDateFilter = req.query.startDate;
   const endDateFilter = req.query.endDate;
   const params = filterToParameters(filter, startDateFilter, endDateFilter);
-  setTimeout(() => dao
-    .filteredTasks(
-      params.important,
-      params.private,
-      params.startDeadline,
-      params.endDeadline
-    )
-    .then((tasks) => res.json(tasks))
-    .catch(() => res.status(500).end()), 3000);
+  setTimeout(
+    () =>
+      dao
+        .filteredTasks(
+          params.important,
+          params.private,
+          params.startDeadline,
+          params.endDeadline
+        )
+        .then((tasks) => res.json(tasks))
+        .catch(() => res.status(500).end()),
+    3000
+  );
 });
 
 //GET /api/tasks/:id
@@ -92,7 +104,7 @@ app.get("/api/tasks/:id", (req, res) => {
     });
 });
 
-//add a new task
+//POST /api/tasks
 app.post(
   "/api/tasks",
   [
@@ -126,7 +138,7 @@ app.post(
   }
 );
 
-//update an existing task
+//PUT /api/tasks/update
 app.put(
   "/api/tasks/update",
   [
@@ -158,7 +170,7 @@ app.put(
   }
 );
 
-//mark a task as completed/uncompleted
+//PUT /api/tasks/update/mark
 app.put(
   "/api/tasks/update/mark",
   [
@@ -198,6 +210,7 @@ app.put(
   }
 );
 
+//DELETE /api/tasks/delete/:id
 app.delete("/api/tasks/delete/:id", async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
