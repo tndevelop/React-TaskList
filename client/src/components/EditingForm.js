@@ -43,7 +43,7 @@ function AddEditForm(props) {
     if (!validDescription() || !validDeadline()) return;
     if (props.task) props.delete(props.task);
     debugger;
-    API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+    API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, isCompleted,  1));
 
 
     /* DEPRECATED
