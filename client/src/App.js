@@ -70,6 +70,8 @@ function App() {
   const removeTask = (task) => {
     DummyTaskList.remove(task);
     setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
+    API.deleteTask(task);
+    setDirty(false);
   };
   /**
    * Apply filter to `taskList`
@@ -119,7 +121,7 @@ function App() {
             exact
             path="/"
             render={() => {
-              setDirty(true);
+              //setDirty(true);
               if (loading) {
                 return (<p id="loading">Please wait, loading your tasks...</p>);
               }
