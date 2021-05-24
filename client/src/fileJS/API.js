@@ -8,11 +8,11 @@ const fetchTasks = async () => {
 
 const fetchAddTask = async (task) => {
   const response = await fetch("/api/tasks", {
-    method: "POST",
+    method:"POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type":"application/json"
     },
-    body: JSON.stringify(task)
+    body:JSON.stringify(task)
   });
   return response.status;
 };
@@ -20,14 +20,26 @@ const fetchAddTask = async (task) => {
 const fetchUpdateTask = async (task) => {
   const response = await fetch("api/tasks/update",
   {
-    method:'PUT',
+    method:"PUT",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type":"application/json"
     },
-    body: JSON.stringify(task)
+    body:JSON.stringify(task)
   });
   return response.status;
 };
 
-const API = { fetchAddTask, fetchTasks, fetchUpdateTask };
+const fetchMarkTask = async (task) => {
+  const response = await fetch("api/tasks/update/mark",
+  {
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(task)
+  });
+  return response.status;
+};
+
+const API = { fetchAddTask, fetchTasks, fetchUpdateTask, fetchMarkTask };
 export default API;
