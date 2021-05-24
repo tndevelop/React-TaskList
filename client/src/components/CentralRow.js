@@ -22,7 +22,7 @@ function CentralRow(props) {
         taskId={props.taskId}
         setDone={props.setDone}
         createElement={props.createElement}
-        delete={props.delete}
+        //delete={props.delete}
         taskList={props.taskList}
         selected={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
         removeTask={props.removeTask}

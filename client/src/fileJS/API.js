@@ -41,5 +41,28 @@ const fetchMarkTask = async (task) => {
   return response.status;
 };
 
-const API = { fetchAddTask, fetchTasks, fetchUpdateTask, fetchMarkTask };
+const fetchDeleteTask = async (task)  => {
+  debugger;
+  const response = await fetch("api/tasks/delete/" + task.id, {
+    method: "DELETE",
+    /*headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(task),
+    */
+  });
+  
+  if (response.ok) {
+    return null;
+  } else {
+    try{
+      return response.json()
+    } catch{ 
+      return "Cannot parse server response";
+    }
+  }
+  
+};
+
+const API = { fetchAddTask, fetchTasks, fetchUpdateTask, fetchMarkTask, fetchDeleteTask };
 export default API;
