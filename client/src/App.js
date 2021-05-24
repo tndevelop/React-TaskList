@@ -70,7 +70,7 @@ function App() {
   const removeTask = (task) => {
     DummyTaskList.remove(task);
     setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
-    API.deleteTask(task);
+    API.fetchDeleteTask(task);
     setDirty(false);
   };
   /**
