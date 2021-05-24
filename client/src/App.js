@@ -42,7 +42,7 @@ function App() {
   useEffect(() => {
     const getTasks = async () => {
       const tasks = await API.fetchTasks();
-      tasks.map(t => t.deadline = dayjs(t.deadline)); //deadline from string to dayjs
+      tasks.map(t => t.deadline = t.deadline ? dayjs(t.deadline) : ""); //deadline from string to dayjs
       DummyTaskList.reset();
       tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
       setTaskList(DummyTaskList.getList());
