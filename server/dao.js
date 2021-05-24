@@ -31,6 +31,7 @@ exports.listTasks = () => {
   });
 };
 
+//get task by id
 exports.getTaskById = (id) => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM tasks WHERE id=?";
@@ -58,6 +59,7 @@ exports.getTaskById = (id) => {
   });
 };
 
+//get filtered tasks
 exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
   let query = `SELECT * FROM tasks`;
 

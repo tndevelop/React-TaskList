@@ -92,7 +92,7 @@ app.get("/api/tasks/:id", (req, res) => {
     });
 });
 
-//add a new task
+//POST /api/tasks
 app.post(
   "/api/tasks",
   [
@@ -126,7 +126,7 @@ app.post(
   }
 );
 
-//update an existing task
+//PUT /api/tasks/update
 app.put(
   "/api/tasks/update",
   [
@@ -158,7 +158,7 @@ app.put(
   }
 );
 
-//mark a task as completed/uncompleted
+//PUT /api/tasks/update/mark
 app.put(
   "/api/tasks/update/mark",
   [
@@ -198,6 +198,7 @@ app.put(
   }
 );
 
+//DELETE /api/tasks/delete/:id
 app.delete("/api/tasks/delete/:id", async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
