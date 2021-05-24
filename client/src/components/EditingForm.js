@@ -41,7 +41,7 @@ function AddEditForm(props) {
   const submitChanges = (event) => {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
-    if (props.task) props.delete(props.task);
+    //if (props.task) props.delete(props.task);
     
     if(props.task){
       API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, 1));
