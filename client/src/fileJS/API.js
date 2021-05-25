@@ -1,5 +1,3 @@
-import { Task } from "../TaskListCreate";
-
 const fetchTasks = async (filter) => {
   const response = await fetch(`/api/tasks?filter=${filter}`);
   const responseBody = await response.json();
@@ -42,7 +40,7 @@ const fetchMarkTask = async (task) => {
 };
 
 const fetchDeleteTask = async (task)  => {
-  debugger;
+  //debugger;
   const response = await fetch("api/tasks/delete/" + task.id, {
     method: "DELETE",
     /*headers: {

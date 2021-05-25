@@ -55,10 +55,6 @@ function AddEditForm(props) {
     }
     props.setDirty(true);
 
-    /* DEPRECATED
-    props.createElement(description, isUrgent, isPrivate, date);
-    */
-
     //props.createElement(description, isUrgent, isPrivate, date, isCompleted);
 
     props.setHideForm(true);

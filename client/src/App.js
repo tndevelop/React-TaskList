@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import React from "react";
 import { useState, useEffect } from "react";
 import "./App.css";
@@ -47,7 +47,7 @@ function App() {
       tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
       setTaskList(DummyTaskList.getList());
     }
-    if (dirty && filter!="undef") {
+    if (dirty && filter!=="undef") {
       getTasks().then(() => {
         setLoading(false);
         setDirty(false);
@@ -65,41 +65,25 @@ function App() {
   const deleteLocal = (task) => {
     DummyTaskList.remove(task);
     setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
-
   };
-
-
 
   const setDone = (task, done) => {
     task.setDone(done);
   };
 
   const removeTask = (task) => {
-    DummyTaskList.remove(task);
-    setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
+    //DummyTaskList.remove(task);
+    //setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
+    deleteLocal(task);
+    addElementAndRefresh(task.description, task.important, task.private, task.deadline, task.completed, "danger");//add the task with the status alert
     API.fetchDeleteTask(task);
-    setDirty(false);
+    setDirty(true);
   };
   /**
    * Apply filter to `taskList`
    * @param {string} filterName
    * @returns {Array<Task>} filtered list
    */
-  const applyFilter = (filterName) => {
-    switch (filterName) {
-      case "Private":
-        return taskList.filter((t) => t.isPrivate());
-      case "Important":
-        return taskList.filter((t) => t.isImportant());
-      case "Next7":
-        return taskList.filter((t) => t.isNextWeek());
-      case "Today":
-        return taskList.filter((t) => t.isToday());
-      default:
-        return taskList;
-    }
-  };
-
   return (
     <Router>
       <Container fluid="true">
@@ -117,10 +101,6 @@ function App() {
               else {
                 setFilter(match.params.selectedFilter);
               }
-  
-              //setDirty(true);
-              //debugger;
-              
               if (loading) {
                 return (<p id="loading">Please wait, loading your tasks...</p>);
               }
@@ -131,7 +111,6 @@ function App() {
                   setFilter={setFilter}
                   setDone={setDone}
                   createElement={addElementAndRefresh}
-                  //taskList={applyFilter(match.params.selectedFilter)}
                   taskList={taskList}
                   removeTask={removeTask}
                   setDirty={setDirty}
@@ -144,7 +123,6 @@ function App() {
             exact
             path="/"
             render={() => {
-              //setDirty(true);
               if (loading) {
                 return (<p id="loading">Please wait, loading your tasks...</p>);
               }
