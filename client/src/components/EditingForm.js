@@ -90,6 +90,7 @@ function AddEditForm(props) {
                 isInvalid={!validDeadline()}
                 type="date"
                 value={date ? date.format("YYYY-MM-DD") : ""}
+                //value={date ? date : ""}
                 onChange={(event) =>
                   event.target.value
                     ? setDate(dayjs(event.target.value))

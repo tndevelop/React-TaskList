@@ -159,6 +159,7 @@ app.put(
       res.status(422).json({ errors: errors.array() });
     }
     const task = req.body;
+    console.log(task);
     try {
       await dao.updateTask(task);
       return res.status(200).end();
@@ -192,7 +193,9 @@ app.put(
     }
     const task = req.body;
     try {
+      //console.log("entrato...");
       const existingTask = await dao.getTaskById(task.id);
+      console.log(existingTask);
       
       if (compareTasks(task, existingTask)) {
         await dao.updateTask(task);
