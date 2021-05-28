@@ -127,7 +127,7 @@ app.post(
     try {
       //await dao.updateExam(examToUpdate);
       let task = req.body;
-      task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
+      //task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
       await dao.createTask(task);
       res.status(200).end();
     } catch (err) {
@@ -195,7 +195,6 @@ app.put(
     try {
       //console.log("entrato...");
       const existingTask = await dao.getTaskById(task.id);
-      console.log(existingTask);
       
       if (compareTasks(task, existingTask)) {
         await dao.updateTask(task);

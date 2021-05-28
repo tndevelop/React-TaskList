@@ -7,6 +7,7 @@ const fetchTasks = async (filter) => {
 };
 
 const fetchAddTask = async (task) => {
+  task.deadline = dayjs(task.deadline).format('YYYY-MM-DD HH:mm');
   const response = await fetch("/api/tasks", {
     method:"POST",
     headers: {
@@ -18,6 +19,7 @@ const fetchAddTask = async (task) => {
 };
 
 const fetchUpdateTask = async (task) => {
+  task.deadline = dayjs(task.deadline).format('YYYY-MM-DD HH:mm');
   const response = await fetch("/api/tasks/update",
   {
     method:"PUT",
@@ -32,8 +34,7 @@ const fetchUpdateTask = async (task) => {
 const fetchMarkTask = async (task) => {
   if(task.deadline){
     task.deadline = dayjs(task.deadline);
-    //task.deadline = task.deadline.format('YYYY-MM-DD HH:mm');
-    //task.deadline = task.deadline.format('YYYY-MM-DD');
+    task.deadline = task.deadline.format('YYYY-MM-DD HH:mm');
   }
   const response = await fetch("/api/tasks/update/mark",
   {
