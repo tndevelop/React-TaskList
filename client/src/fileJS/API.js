@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const fetchTasks = async (filter) => {
   const response = await fetch(`/api/tasks?filter=${filter}`);
   const responseBody = await response.json();
@@ -28,6 +30,10 @@ const fetchUpdateTask = async (task) => {
 };
 
 const fetchMarkTask = async (task) => {
+  if(task.deadline){
+    task.deadline = dayjs(task.deadline);
+    task.deadline = task.deadline.format('YYYY-MM-DD HH:mm');
+  }
   const response = await fetch("api/tasks/update/mark",
   {
     method:"PUT",

@@ -69,6 +69,7 @@ function App() {
 
   const setDone = (task, done) => {
     task.setDone(done);
+    API.fetchMarkTask(task);
   };
 
   const removeTask = (task) => {
