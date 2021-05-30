@@ -29,6 +29,7 @@ function Description(props) {
         checked={checked}
         onChange={(event) => {
           setChecked(event.target.checked);
+          props.markTask(props.task);
           //props.setDone(props.task, props.id, event.target.checked);
         }}
         type="checkbox"

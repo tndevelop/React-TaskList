@@ -1,4 +1,3 @@
-import { Task } from "../TaskListCreate";
 
 const fetchTasks = async () => {
   const response = await fetch("/api/tasks");
@@ -18,7 +17,7 @@ const fetchAddTask = async (task) => {
 };
 
 const fetchUpdateTask = async (task) => {
-  const response = await fetch("api/tasks/update",
+  const response = await fetch("/api/tasks/update",
   {
     method:"PUT",
     headers: {

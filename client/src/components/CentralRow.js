@@ -26,6 +26,7 @@ function CentralRow(props) {
         taskList={props.taskList}
         selected={filters.includes(props.selectedFilter) ? props.selectedFilter : "All"}
         removeTask={props.removeTask}
+        markTask={props.markTask}
       />
     </Row>
   );

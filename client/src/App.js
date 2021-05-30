@@ -1,12 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import React from "react";
 import { useState, useEffect } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavbar from "./components/MyNavbar";
 import "./components/TaskList.js";
-import { List } from "./TaskListCreate";
+import { Task, List } from "./TaskListCreate";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
 import API from './fileJS/API.js';
@@ -73,6 +73,12 @@ function App() {
     API.fetchDeleteTask(task);
     setDirty(false);
   };
+
+  const markTask = (task) => {
+    task.completed = !task.completed;
+    API.fetchMarkTask(new Task(task.id, task.description, task.important, task.private, task.deadline, task.completed, task.user));
+    setDirty(true);
+  }
   /**
    * Apply filter to `taskList`
    * @param {string} filterName
@@ -114,6 +120,7 @@ function App() {
                   createElement={addElementAndRefresh}
                   taskList={applyFilter(match.params.selectedFilter)}
                   removeTask={removeTask}
+                  markTask={markTask}
                 ></CentralRow>);
               }
             }} />
@@ -133,6 +140,7 @@ function App() {
                   createElement={addElementAndRefresh}
                   taskList={applyFilter(filter)}
                   removeTask={removeTask}
+                  markTask={markTask}
                 ></CentralRow>);
               }
             }
