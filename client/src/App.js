@@ -15,63 +15,57 @@ import dayjs from 'dayjs';
 // create the task list and add the dummy tasks
 // id, description, urgent, private, deadline
 const DummyTaskList = new List();
-
-/*DummyTaskList.createElement("laundry", false, true);
-DummyTaskList.createElement(
-  "monday lab",
-  false,
-  false,
-  "2021-06-16T09:00:00.000Z"
-);
-DummyTaskList.createElement(
-  "phone call",
-  true,
-  false,
-  "2021-06-08T15:20:00.000Z"
-);
-DummyTaskList.createElement("lab", true, false, "2021-07-04T15:20:00.000Z");
-DummyTaskList.createElement("study", false, true, "2021-07-10T15:20:00.000Z");
-*/
 function App() {
   const [taskList, setTaskList] = useState([]); /*DummyTaskList.getList()*/
   const [addedTask, setAddedTask] = useState(false);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("Undef");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
 
   useEffect(() => {
     const getTasks = async () => {
-      const tasks = await API.fetchTasks();
+      const tasks = await API.fetchTasks(filter);
       tasks.map(t => t.deadline = t.deadline ? dayjs(t.deadline) : ""); //deadline from string to dayjs
       DummyTaskList.reset();
       tasks.forEach(t => DummyTaskList.createElementFromServer(t.id, t.description, t.important, t.private, t.deadline, t.completed, t.user));
       setTaskList(DummyTaskList.getList());
     }
-    if (dirty) {
+    if (dirty && filter!=="undef") {
       getTasks().then(() => {
         setLoading(false);
         setDirty(false);
+        
       });
     }
-  }, [dirty]);
+  }, [dirty, filter]);
 
-  const addElementAndRefresh = (description, isUrgent, isPrivate, deadline) => {
-    DummyTaskList.createElement(description, isUrgent, isPrivate, deadline);
+  const addElementAndRefresh = (description, isUrgent, isPrivate, deadline, isCompleted, status) => {
+    DummyTaskList.createElement(description, isUrgent, isPrivate, deadline, isCompleted, status);
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
   };
 
-
-
-  const setDone = (task, done) => {
-    task.setDone(done);
-  };
-
-  const removeTask = (task) => {
+  const deleteLocal = (task) => {
     DummyTaskList.remove(task);
     setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
-    API.fetchDeleteTask(task);
-    setDirty(false);
+  };
+
+  const setDone = async (task, done) => {
+    deleteLocal(task);
+    addElementAndRefresh(task.description, task.important, task.private, task.deadline, done, "warning");
+    task.setDone(done);
+    await API.fetchMarkTask(task);
+    setDirty(true);
+    
+  };
+
+  const removeTask = async (task) => {
+    //DummyTaskList.remove(task);
+    //setTaskList((taskList) => taskList.filter((t) => t.id !== task.id));
+    deleteLocal(task);
+    addElementAndRefresh(task.description, task.important, task.private, task.deadline, task.completed, "danger");//add the task with the status alert
+    await API.fetchDeleteTask(task);
+    setDirty(true);
   };
 
   const markTask = (task) => {
@@ -84,21 +78,6 @@ function App() {
    * @param {string} filterName
    * @returns {Array<Task>} filtered list
    */
-  const applyFilter = (filterName) => {
-    switch (filterName) {
-      case "Private":
-        return taskList.filter((t) => t.isPrivate());
-      case "Important":
-        return taskList.filter((t) => t.isImportant());
-      case "Next7":
-        return taskList.filter((t) => t.isNextWeek());
-      case "Today":
-        return taskList.filter((t) => t.isToday());
-      default:
-        return taskList;
-    }
-  };
-
   return (
     <Router>
       <Container fluid="true">
@@ -108,19 +87,29 @@ function App() {
             exact
             path="/:selectedFilter"
             render={({ match }) => {
-              setDirty(true);
-              if (loading) {
-                return (<p>Please wait, loading your tasks...</p>);
+              
+              const filters = ["All", "Private", "Important", "Next7Days", "Today"];
+              if (!filters.includes(match.params.selectedFilter)) {
+                setFilter("All");
               }
+              else {
+                setFilter(match.params.selectedFilter);
+              }
+              if (loading) {
+                return (<p id="loading">Please wait, loading your tasks...</p>);
+              }
+              
               else {
                 return (<CentralRow
                   selectedFilter={match.params.selectedFilter}
                   setFilter={setFilter}
                   setDone={setDone}
                   createElement={addElementAndRefresh}
-                  taskList={applyFilter(match.params.selectedFilter)}
+                  taskList={taskList}
                   removeTask={removeTask}
-                  markTask={markTask}
+                  setDirty={setDirty}
+                  setLoading={setLoading}
+                  deleteLocal={deleteLocal}
                 ></CentralRow>);
               }
             }} />
@@ -128,7 +117,6 @@ function App() {
             exact
             path="/"
             render={() => {
-              //setDirty(true);
               if (loading) {
                 return (<p id="loading">Please wait, loading your tasks...</p>);
               }
@@ -138,9 +126,11 @@ function App() {
                   setFilter={setFilter}
                   setDone={setDone}
                   createElement={addElementAndRefresh}
-                  taskList={applyFilter(filter)}
+                  taskList={taskList}
                   removeTask={removeTask}
-                  markTask={markTask}
+                  setDirty={setDirty}
+                  setLoading={setLoading}
+                  deleteLocal={deleteLocal}
                 ></CentralRow>);
               }
             }

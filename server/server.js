@@ -87,7 +87,7 @@ app.get("/api/tasks", (req, res) => {
         )
         .then((tasks) => res.json(tasks))
         .catch(() => res.status(500).end()),
-    3000
+    1000
   );
 });
 
@@ -127,7 +127,7 @@ app.post(
     try {
       //await dao.updateExam(examToUpdate);
       let task = req.body;
-      task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
+      //task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
       await dao.createTask(task);
       res.status(200).end();
     } catch (err) {
@@ -180,7 +180,7 @@ app.put(
       .if((deadline) => deadline)
       .custom(
         (deadline) =>
-          Date.parse(deadline) && dayjs(deadline).isSameOrAfter(dayjs(), "day")
+          Date.parse(deadline) // && dayjs(deadline).isSameOrAfter(dayjs(), "day")
       ),
     check("private").isBoolean(),
     check("important").isBoolean(),
@@ -193,7 +193,9 @@ app.put(
     }
     const task = req.body;
     try {
+      //console.log("entrato...");
       const existingTask = await dao.getTaskById(task.id);
+      
       if (compareTasks(task, existingTask)) {
         await dao.updateTask(task);
         res.status(200).end();

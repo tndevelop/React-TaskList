@@ -1,4 +1,5 @@
 import { Col } from "react-bootstrap";
+import dayjs from 'dayjs';
 
 /**
  * Deadline contains a date in format "YYYY-MM-DD HH::mm"
@@ -7,7 +8,7 @@ import { Col } from "react-bootstrap";
 function Deadline(props) {
   return (
     <Col className="d-flex justify-content-end">
-      {props.deadline ? props.deadline.format("YYYY-MM-DD") : ""}
+      {props.deadline ? dayjs(props.deadline).format("YYYY-MM-DD") : ""}
     </Col>
   );
 }

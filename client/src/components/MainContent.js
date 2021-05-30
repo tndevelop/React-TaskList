@@ -45,6 +45,8 @@ function MainContent(props) {
           hideForm={hideForm}
           setHideForm={setHideForm}
           delete={props.removeTask}
+          setDirty={props.setDirty}
+          deleteLocal={props.deleteLocal}
         ></AddEditForm>
       )}
     </Col>

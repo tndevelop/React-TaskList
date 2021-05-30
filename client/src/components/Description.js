@@ -6,31 +6,19 @@ import { useState } from "react";
  */
 function Description(props) {
   const [checked, setChecked] = useState(props.task.completed);
-  //checked={checked}
-  /*
-  return (
-    <Col>
-      <Form.Check
-        checked={props.task.completed ? checked : !checked}
-        onChange={(event) => {
-          setChecked(event.target.checked);
-          props.setDone(props.task, props.id, event.target.checked);
-        }}
-        type="checkbox"
-        label={props.description}
-        className={props.important ? "text-danger" : ""}
-      />
-    </Col>
-  );
-  */
+
+  const checkItem = (checked) => {
+    setChecked(checked);
+    props.setDone(props.task, checked);
+  }
+
+
   return (
     <Col>
       <Form.Check
         checked={checked}
         onChange={(event) => {
-          setChecked(event.target.checked);
-          props.markTask(props.task);
-          //props.setDone(props.task, props.id, event.target.checked);
+          checkItem(event.target.checked);
         }}
         type="checkbox"
         label={props.description}

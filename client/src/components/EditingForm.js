@@ -44,15 +44,16 @@ function AddEditForm(props) {
     //if (props.task) props.delete(props.task);
     
     if(props.task){
-      API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, 1));
+      //props.delete(props.task);
+      props.deleteLocal(props.task);
+      props.createElement(description, isUrgent, isPrivate, date, isCompleted, "warning");
+      API.fetchUpdateTask(new Task(props.task.id, description, isUrgent, isPrivate, date, isCompleted));
     }
     else{
-      API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, 1));
+      props.createElement(description, isUrgent, isPrivate, date, isCompleted, "success");
+      API.fetchAddTask(new Task(0, description, isUrgent, isPrivate, date, isCompleted));
     }
-
-    /* DEPRECATED
-    props.createElement(description, isUrgent, isPrivate, date);
-    */
+    props.setDirty(true);
 
     //props.createElement(description, isUrgent, isPrivate, date, isCompleted);
 
@@ -89,6 +90,7 @@ function AddEditForm(props) {
                 isInvalid={!validDeadline()}
                 type="date"
                 value={date ? date.format("YYYY-MM-DD") : ""}
+                //value={date ? date : ""}
                 onChange={(event) =>
                   event.target.value
                     ? setDate(dayjs(event.target.value))
