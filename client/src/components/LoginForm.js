@@ -1,9 +1,10 @@
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col, Alert } from "react-bootstrap";
 import { useState } from "react";
 
 function LoginForm(props) {
   const [userName, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const validString = (str) => {
     return str.length !== 0 && str.search(/^\s+$/gm) === -1;
@@ -13,13 +14,18 @@ function LoginForm(props) {
     event.preventDefault();
     if (!validString(userName) || !validString(password)) return;
 
-    props.login(userName, password);
+    setMessage("");
+
+    let response = props.login(userName, password);
+
+    setMessage(response);
   };
 
   return (
     <Row className="below-nav">
       <Col sm="4"></Col>
       <Form as={Col}>
+        {message !== "" ? <Alert variant="danger">{message}</Alert> : ""}
         <Form.Group controlId="email">
           <Form.Label>Username</Form.Label>
           <Form.Control
