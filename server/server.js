@@ -6,6 +6,10 @@ const dayjs = require("dayjs");
 const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
 dayjs.extend(isSameOrAfter);
 const { response } = require("express");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
 
 /*id,description,important, private, deadline, complete, user */
 function filterToParameters(filterName, startDate, endDate) {
@@ -69,6 +73,62 @@ app.listen(PORT, () =>
 // set-up the middlewares
 app.use(morgan("dev"));
 app.use(express.json()); // for parsing json request body
+
+
+
+
+/*** PASSPORT SETUP ***/
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    dao.getUser(username, password).then((user) => { 
+      if (!user)
+        return done(null, false, { message: 'Incorrect username and/or password.' });
+  
+      return done(null, user);
+    });
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => { 
+  dao.getUserById(id).then((user) => {
+    done(null, user); // req.user
+  })
+  .catch((err) => {
+    done(err, null);
+  });
+});
+
+const isLoggedIn = (req, res, next) => {
+  if(req.isAuthenticated()) {
+    return next();
+  }
+
+  return res.status(400).json({error: 'Not authorized'});
+}
+
+
+/*** SESSION ***/
+
+// enable sessions in Express
+app.use(session({
+  // set up here express-session
+  secret: 'una frase segreta da non condividere con nessuno e da nessuna parte, usata per firmare il cookie Session ID',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+// init Passport to use sessions
+app.use(passport.initialize()); 
+app.use(passport.session());
+
+
+
+/*** Tasks APIs ***/
 
 // GET /api/tasks
 app.get("/api/tasks", (req, res) => {
@@ -224,3 +284,15 @@ app.delete("/api/tasks/delete/:id", async (req, res) => {
     });
   }
 });
+
+/*** User APIs ***/
+app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
+  res.json(req.user);
+});
+
+app.get('/api/sessions/current', (req, res) => {
+  if(req.isAuthenticated())
+    res.json(req.user);
+  else
+    res.status(401).json({error: 'Not authenticated'});
+})
