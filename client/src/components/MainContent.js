@@ -24,6 +24,7 @@ function MainContent(props) {
         selected={props.selected}
         setTaskToModify={modifyTask}
         removeTask={props.removeTask}
+        markTask={props.markTask}
       ></TaskList>
 
       <AiFillPlusCircle

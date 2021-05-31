@@ -7,6 +7,7 @@ const fetchTasks = async (filter) => {
 };
 
 const fetchAddTask = async (task) => {
+  task.deadline = dayjs(task.deadline).format('YYYY-MM-DD HH:mm');
   const response = await fetch("/api/tasks", {
     method:"POST",
     headers: {
@@ -18,7 +19,8 @@ const fetchAddTask = async (task) => {
 };
 
 const fetchUpdateTask = async (task) => {
-  const response = await fetch("api/tasks/update",
+  task.deadline = dayjs(task.deadline).format('YYYY-MM-DD HH:mm');
+  const response = await fetch("/api/tasks/update",
   {
     method:"PUT",
     headers: {
@@ -34,7 +36,7 @@ const fetchMarkTask = async (task) => {
     task.deadline = dayjs(task.deadline);
     task.deadline = task.deadline.format('YYYY-MM-DD HH:mm');
   }
-  const response = await fetch("api/tasks/update/mark",
+  const response = await fetch("/api/tasks/update/mark",
   {
     method:"PUT",
     headers:{
@@ -47,7 +49,7 @@ const fetchMarkTask = async (task) => {
 
 const fetchDeleteTask = async (task)  => {
   //debugger;
-  const response = await fetch("api/tasks/delete/" + task.id, {
+  const response = await fetch("/api/tasks/delete/" + task.id, {
     method: "DELETE",
     /*headers: {
       "Content-Type": "application/json",
