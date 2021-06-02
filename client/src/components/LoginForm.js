@@ -2,7 +2,8 @@ import { Form, Button, Row, Col, Alert } from "react-bootstrap";
 import { useState } from "react";
 
 function LoginForm(props) {
-  const [userName, setUsername] = useState("");
+  //const [userName, setUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
@@ -12,11 +13,16 @@ function LoginForm(props) {
 
   const tryLogin = (event) => {
     event.preventDefault();
-    if (!validString(userName) || !validString(password)) return;
+    const credentials = { username, password };
+    //if (!validString(userName) || !validString(password)) return;
+    if (!validString(username) || !validString(password)) return;
+
 
     setMessage("");
-
-    let response = props.login(userName, password);
+    //console.log({userName, password});
+    //let response = props.login({userName, password});
+    let response = props.login(credentials);
+    
 
     setMessage(response);
   };
@@ -31,9 +37,11 @@ function LoginForm(props) {
           <Form.Control
             type="email"
             placeholder="Enter username"
-            value={userName}
+            value={username}
+            //value={userName}
             onChange={(ev) => setUsername(ev.target.value)}
-            isInvalid={!validString(userName)}
+            isInvalid={!validString(username)}
+            //isInvalid={!validString(userName)}
           />
           <Form.Control.Feedback type="invalid">
             Email must be not empty

@@ -84,7 +84,6 @@ passport.use(new LocalStrategy(
     dao.getUser(username, password).then((user) => { 
       if (!user)
         return done(null, false, { message: 'Incorrect username and/or password.' });
-  
       return done(null, user);
     });
   }
@@ -253,7 +252,6 @@ app.put(
     }
     const task = req.body;
     try {
-      //console.log("entrato...");
       const existingTask = await dao.getTaskById(task.id);
       
       if (compareTasks(task, existingTask)) {
