@@ -11,18 +11,13 @@ function LoginForm(props) {
     return str.length !== 0 && str.search(/^\s+$/gm) === -1;
   };
 
-  const tryLogin = (event) => {
+  const tryLogin = async (event) => {
     event.preventDefault();
     const credentials = { username, password };
-    //if (!validString(userName) || !validString(password)) return;
     if (!validString(username) || !validString(password)) return;
 
-
     setMessage("");
-    //console.log({userName, password});
-    //let response = props.login({userName, password});
-    let response = props.login(credentials);
-    
+    let response = await props.login(credentials);
 
     setMessage(response);
   };
@@ -38,10 +33,8 @@ function LoginForm(props) {
             type="email"
             placeholder="Enter username"
             value={username}
-            //value={userName}
             onChange={(ev) => setUsername(ev.target.value)}
             isInvalid={!validString(username)}
-            //isInvalid={!validString(userName)}
           />
           <Form.Control.Feedback type="invalid">
             Email must be not empty
@@ -72,13 +65,15 @@ function LoginForm(props) {
 }
 
 function LogoutButton(props) {
-  <Row className="below-nav">
-    <Col sm="4"></Col>
-    <Button variant="danger" as={Col} onClick={props.logout}>
-      Logout
-    </Button>
-    <Col sm="4"></Col>
-  </Row>;
+  return (
+    <Row className="below-nav">
+      <Col sm="4"></Col>
+      <Button variant="danger" as={Col} onClick={props.logout}>
+        Logout
+      </Button>
+      <Col sm="4"></Col>
+    </Row>
+  );
 }
 
 export { LoginForm, LogoutButton };
