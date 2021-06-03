@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 
 const BASEURL = "/api";
 
-const fetchTasks = async (filter) => {
-  const response = await fetch(`/api/tasks?filter=${filter}`);
+const fetchTasks = async (filter, user) => {
+  const response = await fetch(`/api/tasks?filter=${filter}&user=${user.id}`);
   const responseBody = await response.json();
   return responseBody;
 };

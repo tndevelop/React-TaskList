@@ -10,7 +10,7 @@ const db = new sqlite.Database("tasks.db", (err) => {
   if (err) throw err;
 });
 
-// get all tasks
+// get all tasks from all users (today, 03/06/21, this function is not used. See the filteredTasks function)
 exports.listTasks = () => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM tasks";
@@ -61,8 +61,8 @@ exports.getTaskById = (id) => {
   });
 };
 
-//get filtered tasks
-exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
+//get filtered tasks from a single user
+exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline, userId) => {
   let query = `SELECT * FROM tasks`;
 
   let whereClause = [];
@@ -70,6 +70,7 @@ exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
   if (isPrivate) whereClause.push(`private=${isPrivate}`);
   if (startDeadline) whereClause.push(`deadline >= '${startDeadline}'`);
   if (endDeadline) whereClause.push(`deadline <= '${endDeadline}'`);
+  if(userId) whereClause.push(`user = ${userId}`);
   if (whereClause.length !== 0) query += " WHERE " + whereClause.join(" AND ");
   return new Promise((resolve, reject) => {
     db.all(query, [], (err, rows) => {
@@ -119,7 +120,7 @@ exports.createTask = (task) => {
         task.private,
         task.deadline,
         task.completed,
-        1,
+        task.user,
       ],
       function (err) {
         if (err) {

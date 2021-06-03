@@ -29,35 +29,42 @@ function App() {
   const [dirty, setDirty] = useState(true);
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const [user, setUser] = useState({ id: -1 });
+  
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
-      //await API.getUserInfo();
-      setLoggedIn(false);
+      if(loggedIn){
+        const tmpUser = await API.getUserInfo();
+        setUser(tmpUser);
+        setLoggedIn(true);
+        setDirty(true);
+      }else{
+        setUser([]);
+      }   
     };
-    //checkAuth();
-  }, []);
+    checkAuth();
+  }, [loggedIn, user.id]);
 
   useEffect(() => {
     const getTasks = async () => {
-      //if (loggedIn) {
-      const tasks = await API.fetchTasks(filter);
-      tasks.map((t) => (t.deadline = t.deadline ? dayjs(t.deadline) : "")); //deadline from string to dayjs
-      DummyTaskList.reset();
-      tasks.forEach((t) =>
-        DummyTaskList.createElementFromServer(
-          t.id,
-          t.description,
-          t.important,
-          t.private,
-          t.deadline,
-          t.completed,
-          t.user
-        )
-      );
-      setTaskList(DummyTaskList.getList());
-      //}
+      if (loggedIn) {
+        const tasks = await API.fetchTasks(filter, user);
+        tasks.map((t) => (t.deadline = t.deadline ? dayjs(t.deadline) : "")); //deadline from string to dayjs
+        DummyTaskList.reset();
+        tasks.forEach((t) =>
+          DummyTaskList.createElementFromServer(
+            t.id,
+            t.description,
+            t.important,
+            t.private,
+            t.deadline,
+            t.completed,
+            t.user
+          )
+        );
+        setTaskList(DummyTaskList.getList());
+      }
     };
     if (dirty && filter !== "undef" && loggedIn) {
       getTasks()
@@ -73,7 +80,7 @@ function App() {
           console.error(err);
         });
     }
-  }, [dirty, filter, loggedIn]);
+  }, [dirty, filter, user.id]);
 
   const addElementAndRefresh = (
     description,
@@ -89,7 +96,8 @@ function App() {
       isPrivate,
       deadline,
       isCompleted,
-      status
+      status,
+      user.id //user is a state variable
     );
     setTaskList(DummyTaskList.getList());
     setAddedTask(!addedTask);
@@ -130,7 +138,7 @@ function App() {
     await API.fetchDeleteTask(task);
     setDirty(true);
   };
-
+/*
   const markTask = (task) => {
     task.completed = !task.completed;
     API.fetchMarkTask(
@@ -146,7 +154,7 @@ function App() {
     );
     setDirty(true);
   };
-
+*/
   const doLogIn = async (credentials) => {
     try {
       const response = await API.logIn(credentials);
@@ -238,6 +246,7 @@ function App() {
                       setDirty={setDirty}
                       setLoading={setLoading}
                       deleteLocal={deleteLocal}
+                      userId = {user.id}
                     ></CentralRow>
                   </>
                 );
@@ -278,6 +287,7 @@ function App() {
                       setDirty={setDirty}
                       setLoading={setLoading}
                       deleteLocal={deleteLocal}
+                      userId = {user.id}
                     ></CentralRow>
                   </>
                 );

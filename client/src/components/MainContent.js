@@ -47,6 +47,7 @@ function MainContent(props) {
           delete={props.removeTask}
           setDirty={props.setDirty}
           deleteLocal={props.deleteLocal}
+          userId = {props.userId}
         ></AddEditForm>
       )}
     </Col>

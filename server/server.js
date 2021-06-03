@@ -11,12 +11,13 @@ const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 
 /*id,description,important, private, deadline, complete, user */
-function filterToParameters(filterName, startDate, endDate) {
+function filterToParameters(filterName, startDate, endDate, user) {
   let defaultDict = {
     important: undefined,
     private: undefined,
     startDeadline: undefined,
     endDeadline: undefined,
+    userId: undefined,
   };
   switch (filterName) {
     case "Private":
@@ -46,6 +47,11 @@ function filterToParameters(filterName, startDate, endDate) {
     if (endDate.isValid())
       defaultDict.endDeadline = endDate.format("YYYY-MM-DD");
   }
+
+  if(user){
+    defaultDict.userId = user;
+  }
+
   return defaultDict;
 }
 
@@ -132,9 +138,10 @@ app.use(passport.session());
 // GET /api/tasks
 app.get("/api/tasks", (req, res) => {
   const filter = req.query.filter ? req.query.filter : "All";
+  const user = req.query.user;
   const startDateFilter = req.query.startDate;
   const endDateFilter = req.query.endDate;
-  const params = filterToParameters(filter, startDateFilter, endDateFilter);
+  const params = filterToParameters(filter, startDateFilter, endDateFilter, user);
   setTimeout(
     () =>
       dao
@@ -142,7 +149,8 @@ app.get("/api/tasks", (req, res) => {
           params.important,
           params.private,
           params.startDeadline,
-          params.endDeadline
+          params.endDeadline,
+          params.userId
         )
         .then((tasks) => res.json(tasks))
         .catch(() => res.status(500).end()),
@@ -177,6 +185,7 @@ app.post(
     check("private").isBoolean(),
     check("important").isBoolean(),
     check("completed").isBoolean(),
+    check("user").exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
