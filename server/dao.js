@@ -10,7 +10,7 @@ const db = new sqlite.Database("tasks.db", (err) => {
   if (err) throw err;
 });
 
-// get all tasks
+// get all tasks from all users (today, 03/06/21, this function is not used. See the filteredTasks function)
 exports.listTasks = () => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM tasks";
@@ -61,8 +61,8 @@ exports.getTaskById = (id) => {
   });
 };
 
-//get filtered tasks
-exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
+//get filtered tasks from a single user
+exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline, userId) => {
   let query = `SELECT * FROM tasks`;
 
   let whereClause = [];
@@ -70,6 +70,7 @@ exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
   if (isPrivate) whereClause.push(`private=${isPrivate}`);
   if (startDeadline) whereClause.push(`deadline >= '${startDeadline}'`);
   if (endDeadline) whereClause.push(`deadline <= '${endDeadline}'`);
+  if (userId) whereClause.push(`user = ${userId}`);
   if (whereClause.length !== 0) query += " WHERE " + whereClause.join(" AND ");
   return new Promise((resolve, reject) => {
     db.all(query, [], (err, rows) => {
@@ -91,8 +92,8 @@ exports.filteredTasks = (important, isPrivate, startDeadline, endDeadline) => {
   });
 };
 
-//create a new task
-exports.createTask = (task) => {
+
+exports.getId = () => {
   return new Promise((resolve, reject) => {
     const sql_id = "SELECT MAX(id) as maxId FROM tasks";
     let id;
@@ -103,11 +104,19 @@ exports.createTask = (task) => {
       }
       if (row.maxId) {
         id = row.maxId + 1;
+
       } else {
         id = 1;
       }
+      resolve(id);
     });
+  })
+}
 
+
+//create a new task
+exports.createTask =  (task, id) => {
+  return new Promise((resolve, reject) =>  {
     const sql =
       "INSERT INTO tasks(id, description, important, private, deadline, completed, user) VALUES(?, ?, ?, ?, ?, ?, ?)";
     db.run(
@@ -119,7 +128,7 @@ exports.createTask = (task) => {
         task.private,
         task.deadline,
         task.completed,
-        1,
+        task.user,
       ],
       function (err) {
         if (err) {
@@ -129,6 +138,7 @@ exports.createTask = (task) => {
         }
       }
     );
+
   });
 };
 
@@ -177,20 +187,20 @@ exports.deleteTask = (id) => {
 exports.getUser = (email, password) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM users WHERE email = ?';
-    db.get(sql, [email], (err,row) => {
-      if(err){
+    db.get(sql, [email], (err, row) => {
+      if (err) {
         reject(err);
       }
-      else if(row === undefined){
+      else if (row === undefined) {
         resolve(false);
       }
-      else{
-        const user = {id: row.id, username: row.email, name: row.name};
+      else {
+        const user = { id: row.id, username: row.email, name: row.name };
         bcrypt.compare(password, row.hash).then(result => {
-          if(result){
+          if (result) {
             resolve(user);
           }
-          else{
+          else {
             resolve(false);
           }
         });
@@ -204,14 +214,14 @@ exports.getUserById = (id) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM users WHERE id = ?';
     db.get(sql, [id], (err, row) => {
-      if (err) { 
-        reject(err); 
+      if (err) {
+        reject(err);
       }
-      else if (row === undefined) { 
-        resolve({error: 'User not found!'}); 
+      else if (row === undefined) {
+        resolve({ error: 'User not found!' });
       }
       else {
-        const user = {id: row.id, username: row.email, name: row.name};
+        const user = { id: row.id, username: row.email, name: row.name };
         resolve(user);
       }
     });

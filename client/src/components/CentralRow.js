@@ -33,6 +33,7 @@ function CentralRow(props) {
         removeTask={props.removeTask}
         setDirty={props.setDirty}
         deleteLocal={props.deleteLocal}
+        userId = {props.userId}
       />
     </Row>
   );

@@ -6,18 +6,18 @@ const dayjs = require("dayjs");
 const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
 dayjs.extend(isSameOrAfter);
 const { response } = require("express");
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const session = require('express-session');
-
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
 
 /*id,description,important, private, deadline, complete, user */
-function filterToParameters(filterName, startDate, endDate) {
+function filterToParameters(filterName, startDate, endDate, user) {
   let defaultDict = {
     important: undefined,
     private: undefined,
     startDeadline: undefined,
     endDeadline: undefined,
+    userId: undefined,
   };
   switch (filterName) {
     case "Private":
@@ -47,6 +47,11 @@ function filterToParameters(filterName, startDate, endDate) {
     if (endDate.isValid())
       defaultDict.endDeadline = endDate.format("YYYY-MM-DD");
   }
+
+  if(user){
+    defaultDict.userId = user;
+  }
+
   return defaultDict;
 }
 
@@ -74,67 +79,69 @@ app.listen(PORT, () =>
 app.use(morgan("dev"));
 app.use(express.json()); // for parsing json request body
 
-
-
-
 /*** PASSPORT SETUP ***/
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    dao.getUser(username, password).then((user) => { 
+passport.use(
+  new LocalStrategy(function (username, password, done) {
+    dao.getUser(username, password).then((user) => {
       if (!user)
-        return done(null, false, { message: 'Incorrect username and/or password.' });
-  
+        return done(null, false, {
+          message: "Incorrect username and/or password.",
+        });
       return done(null, user);
     });
-  }
-));
+  })
+);
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => { 
-  dao.getUserById(id).then((user) => {
-    done(null, user); // req.user
-  })
-  .catch((err) => {
-    done(err, null);
-  });
+passport.deserializeUser((id, done) => {
+  dao
+    .getUserById(id)
+    .then((user) => {
+      done(null, user); // req.user
+    })
+    .catch((err) => {
+      done(err, null);
+    });
 });
 
 const isLoggedIn = (req, res, next) => {
-  if(req.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     return next();
   }
 
-  return res.status(400).json({error: 'Not authorized'});
-}
-
+  return res.status(400).json({ error: "Not authorized" });
+};
 
 /*** SESSION ***/
 
 // enable sessions in Express
-app.use(session({
-  // set up here express-session
-  secret: 'una frase segreta da non condividere con nessuno e da nessuna parte, usata per firmare il cookie Session ID',
-  resave: false,
-  saveUninitialized: false,
-}));
+app.use(
+  session({
+    // set up here express-session
+    secret:
+      "una frase segreta da non condividere con nessuno e da nessuna parte, usata per firmare il cookie Session ID",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // init Passport to use sessions
-app.use(passport.initialize()); 
+app.use(passport.initialize());
 app.use(passport.session());
-
-
 
 /*** Tasks APIs ***/
 
 // GET /api/tasks
-app.get("/api/tasks", (req, res) => {
+app.get("/api/tasks",  isLoggedIn, (req, res) => {
   const filter = req.query.filter ? req.query.filter : "All";
+  const user = req.query.user;
   const startDateFilter = req.query.startDate;
   const endDateFilter = req.query.endDate;
+  //const params = filterToParameters(filter, startDateFilter, endDateFilter, user);
   const params = filterToParameters(filter, startDateFilter, endDateFilter);
   setTimeout(
     () =>
@@ -143,7 +150,9 @@ app.get("/api/tasks", (req, res) => {
           params.important,
           params.private,
           params.startDeadline,
-          params.endDeadline
+          params.endDeadline,
+          req.user.id
+          //params.userId
         )
         .then((tasks) => res.json(tasks))
         .catch(() => res.status(500).end()),
@@ -152,7 +161,7 @@ app.get("/api/tasks", (req, res) => {
 });
 
 //GET /api/tasks/:id
-app.get("/api/tasks/:id", (req, res) => {
+app.get("/api/tasks/:id", isLoggedIn, (req, res) => {
   dao
     .getTaskById(req.params.id)
     .then((exam) => res.json(exam))
@@ -167,6 +176,7 @@ app.get("/api/tasks/:id", (req, res) => {
 //POST /api/tasks
 app.post(
   "/api/tasks",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
@@ -177,7 +187,7 @@ app.post(
       ),
     check("private").isBoolean(),
     check("important").isBoolean(),
-    check("completed").isBoolean(),
+    check("completed").isBoolean()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -187,8 +197,11 @@ app.post(
     try {
       //await dao.updateExam(examToUpdate);
       let task = req.body;
+      task.user = req.user.id;
       //task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
-      await dao.createTask(task);
+      let id = await dao.getId();
+      console.log("create task");
+      await dao.createTask(task, id);
       res.status(200).end();
     } catch (err) {
       res
@@ -201,6 +214,7 @@ app.post(
 //PUT /api/tasks/update
 app.put(
   "/api/tasks/update",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
@@ -219,6 +233,7 @@ app.put(
       res.status(422).json({ errors: errors.array() });
     }
     const task = req.body;
+    task.user = req.user.id;
     console.log(task);
     try {
       await dao.updateTask(task);
@@ -234,13 +249,13 @@ app.put(
 //PUT /api/tasks/update/mark
 app.put(
   "/api/tasks/update/mark",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
       .if((deadline) => deadline)
       .custom(
-        (deadline) =>
-          Date.parse(deadline) // && dayjs(deadline).isSameOrAfter(dayjs(), "day")
+        (deadline) => Date.parse(deadline) // && dayjs(deadline).isSameOrAfter(dayjs(), "day")
       ),
     check("private").isBoolean(),
     check("important").isBoolean(),
@@ -252,10 +267,10 @@ app.put(
       return res.status(422).json({ errors: errors.array() });
     }
     const task = req.body;
+    task.user = req.user.id;
     try {
-      //console.log("entrato...");
       const existingTask = await dao.getTaskById(task.id);
-      
+
       if (compareTasks(task, existingTask)) {
         await dao.updateTask(task);
         res.status(200).end();
@@ -274,7 +289,7 @@ app.put(
 );
 
 //DELETE /api/tasks/delete/:id
-app.delete("/api/tasks/delete/:id", async (req, res) => {
+app.delete("/api/tasks/delete/:id", isLoggedIn, async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
     res.status(204).end();
@@ -286,13 +301,18 @@ app.delete("/api/tasks/delete/:id", async (req, res) => {
 });
 
 /*** User APIs ***/
-app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
+app.post("/api/sessions", passport.authenticate("local"), (req, res) => {
   res.json(req.user);
 });
 
-app.get('/api/sessions/current', (req, res) => {
-  if(req.isAuthenticated())
-    res.json(req.user);
-  else
-    res.status(401).json({error: 'Not authenticated'});
-})
+app.get("/api/sessions/current", (req, res) => {
+  if (req.isAuthenticated()) res.json(req.user);
+  else res.status(401).json({ error: "Not authenticated" });
+});
+
+// DELETE /sessions/current 
+// logout
+app.delete('/api/sessions/current', (req, res) => {
+  req.logout();
+  res.end();
+});

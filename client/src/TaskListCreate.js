@@ -89,14 +89,15 @@ function List() {
     this.count = 0;
   }
 
-  this.createElement = (description, isUrgent, isPrivate, deadline, completed, status) => {
+  this.createElement = (description, isUrgent, isPrivate, deadline, completed, user, status) => {
     const task = new Task(
       this.count,
       description,
       isUrgent,
       isPrivate,
       deadline,
-      completed
+      completed,
+      user
     );
     task.status = status;
     this.count++;
