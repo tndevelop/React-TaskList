@@ -2,8 +2,15 @@ import dayjs from "dayjs";
 
 const BASEURL = "/api";
 
+/*
 const fetchTasks = async (filter, user) => {
   const response = await fetch(`/api/tasks?filter=${filter}&user=${user.id}`);
+  const responseBody = await response.json();
+  return responseBody;
+};
+*/
+const fetchTasks = async (filter) => {
+  const response = await fetch(`/api/tasks?filter=${filter}`);
   const responseBody = await response.json();
   return responseBody;
 };
@@ -95,9 +102,20 @@ async function logOut() {
   await fetch("/api/sessions/current", { method: "DELETE" });
 }
 
+/*
 async function getUserInfo() {
   const response = await fetch(BASEURL + "/sessions/current");
   return await response.json();
+}
+*/
+async function getUserInfo() {
+  const response = await fetch(BASEURL + '/sessions/current');
+  const userInfo = await response.json();
+  if (response.ok) {
+    return userInfo;
+  } else {
+    throw userInfo;  // an object with the error coming from the server
+  }
 }
 
 const API = {

@@ -18,7 +18,6 @@ function LoginForm(props) {
 
     setMessage("");
     let response = await props.login(credentials);
-
     setMessage(response);
   };
 

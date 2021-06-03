@@ -31,6 +31,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({ id: -1 });
   
+  /*
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
@@ -45,11 +46,22 @@ function App() {
     };
     checkAuth();
   }, [loggedIn, user.id]);
+  */
+  useEffect(() => {
+    const checkAuth = async () => {
+      // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
+      await API.getUserInfo();
+      setLoggedIn(true);
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const getTasks = async () => {
+      console.log("dentro getTasks");
       if (loggedIn) {
-        const tasks = await API.fetchTasks(filter, user);
+        //const tasks = await API.fetchTasks(filter, user);
+        const tasks = await API.fetchTasks(filter);
         tasks.map((t) => (t.deadline = t.deadline ? dayjs(t.deadline) : "")); //deadline from string to dayjs
         DummyTaskList.reset();
         tasks.forEach((t) =>
@@ -80,7 +92,8 @@ function App() {
           console.error(err);
         });
     }
-  }, [dirty, filter, user.id]);
+  }, [dirty, filter, loggedIn]);
+  //}, [dirty, filter, user.id]);
 
   const addElementAndRefresh = (
     description,
@@ -99,7 +112,9 @@ function App() {
       status,
       user.id //user is a state variable
     );
+    
     setTaskList(DummyTaskList.getList());
+    
     setAddedTask(!addedTask);
   };
 

@@ -136,12 +136,13 @@ app.use(passport.session());
 /*** Tasks APIs ***/
 
 // GET /api/tasks
-app.get("/api/tasks", (req, res) => {
+app.get("/api/tasks",  isLoggedIn, (req, res) => {
   const filter = req.query.filter ? req.query.filter : "All";
   const user = req.query.user;
   const startDateFilter = req.query.startDate;
   const endDateFilter = req.query.endDate;
-  const params = filterToParameters(filter, startDateFilter, endDateFilter, user);
+  //const params = filterToParameters(filter, startDateFilter, endDateFilter, user);
+  const params = filterToParameters(filter, startDateFilter, endDateFilter);
   setTimeout(
     () =>
       dao
@@ -150,7 +151,8 @@ app.get("/api/tasks", (req, res) => {
           params.private,
           params.startDeadline,
           params.endDeadline,
-          params.userId
+          req.user.id
+          //params.userId
         )
         .then((tasks) => res.json(tasks))
         .catch(() => res.status(500).end()),
@@ -159,7 +161,7 @@ app.get("/api/tasks", (req, res) => {
 });
 
 //GET /api/tasks/:id
-app.get("/api/tasks/:id", (req, res) => {
+app.get("/api/tasks/:id", isLoggedIn, (req, res) => {
   dao
     .getTaskById(req.params.id)
     .then((exam) => res.json(exam))
@@ -174,6 +176,7 @@ app.get("/api/tasks/:id", (req, res) => {
 //POST /api/tasks
 app.post(
   "/api/tasks",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
@@ -184,8 +187,7 @@ app.post(
       ),
     check("private").isBoolean(),
     check("important").isBoolean(),
-    check("completed").isBoolean(),
-    check("user").exists(),
+    check("completed").isBoolean()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -195,8 +197,11 @@ app.post(
     try {
       //await dao.updateExam(examToUpdate);
       let task = req.body;
+      task.user = req.user.id;
       //task.deadline = dayjs(task.deadline).format("YYYY-MM-DD HH:mm");
-      await dao.createTask(task);
+      let id = await dao.getId();
+      console.log("create task");
+      await dao.createTask(task, id);
       res.status(200).end();
     } catch (err) {
       res
@@ -209,6 +214,7 @@ app.post(
 //PUT /api/tasks/update
 app.put(
   "/api/tasks/update",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
@@ -227,6 +233,7 @@ app.put(
       res.status(422).json({ errors: errors.array() });
     }
     const task = req.body;
+    task.user = req.user.id;
     console.log(task);
     try {
       await dao.updateTask(task);
@@ -242,6 +249,7 @@ app.put(
 //PUT /api/tasks/update/mark
 app.put(
   "/api/tasks/update/mark",
+  isLoggedIn,
   [
     check("description").exists(),
     check("deadline")
@@ -259,6 +267,7 @@ app.put(
       return res.status(422).json({ errors: errors.array() });
     }
     const task = req.body;
+    task.user = req.user.id;
     try {
       const existingTask = await dao.getTaskById(task.id);
 
@@ -280,7 +289,7 @@ app.put(
 );
 
 //DELETE /api/tasks/delete/:id
-app.delete("/api/tasks/delete/:id", async (req, res) => {
+app.delete("/api/tasks/delete/:id", isLoggedIn, async (req, res) => {
   try {
     await dao.deleteTask(req.params.id);
     res.status(204).end();
@@ -299,4 +308,11 @@ app.post("/api/sessions", passport.authenticate("local"), (req, res) => {
 app.get("/api/sessions/current", (req, res) => {
   if (req.isAuthenticated()) res.json(req.user);
   else res.status(401).json({ error: "Not authenticated" });
+});
+
+// DELETE /sessions/current 
+// logout
+app.delete('/api/sessions/current', (req, res) => {
+  req.logout();
+  res.end();
 });
