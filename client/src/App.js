@@ -7,9 +7,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavbar from "./components/MyNavbar";
 import "./components/TaskList.js";
 import { Task, List } from "./TaskListCreate";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
-import { LoginForm } from "./components/LoginForm";
+import { LoginForm, LogoutButton } from "./components/LoginForm.js";
 import API from "./fileJS/API.js";
 import dayjs from "dayjs";
 
@@ -22,9 +27,21 @@ function App() {
   const [filter, setFilter] = useState("Undef");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
+  const [message, setMessage] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
+      //await API.getUserInfo();
+      setLoggedIn(false);
+    };
+    //checkAuth();
+  }, []);
 
   useEffect(() => {
     const getTasks = async () => {
+      //if (loggedIn) {
       const tasks = await API.fetchTasks(filter);
       tasks.map((t) => (t.deadline = t.deadline ? dayjs(t.deadline) : "")); //deadline from string to dayjs
       DummyTaskList.reset();
@@ -40,14 +57,23 @@ function App() {
         )
       );
       setTaskList(DummyTaskList.getList());
+      //}
     };
-    if (dirty && filter !== "undef") {
-      getTasks().then(() => {
-        setLoading(false);
-        setDirty(false);
-      });
+    if (dirty && filter !== "undef" && loggedIn) {
+      getTasks()
+        .then(() => {
+          setLoading(false);
+          setDirty(false);
+        })
+        .catch((err) => {
+          setMessage({
+            msg: "Impossible to load your exams! Please, try again later...",
+            type: "danger",
+          });
+          console.error(err);
+        });
     }
-  }, [dirty, filter]);
+  }, [dirty, filter, loggedIn]);
 
   const addElementAndRefresh = (
     description,
@@ -121,12 +147,50 @@ function App() {
     setDirty(true);
   };
 
+  const doLogIn = async (credentials) => {
+    try {
+      const response = await API.logIn(credentials);
+      if (response) {
+        setLoggedIn(true);
+        return response.name;
+      }
+    } catch (e) {
+      return e.message;
+    }
+  };
+
+  const doLogOut = () => {
+    API.logOut()
+      .then((val) => setLoggedIn(false))
+      .catch((err) => console.log(err));
+    // clean up everything
+    DummyTaskList.reset();
+    setTaskList(DummyTaskList.getList());
+
+    /*
+    setCourses([]);
+    setExams([]);
+    */
+  };
+
+  /**
+   * Apply filter to `taskList`
+   * @param {string} filterName
+   * @returns {Array<Task>} filtered list
+   */
   return (
     <Router>
       <Container fluid="true">
         <MyNavbar></MyNavbar>
         <Switch>
-          <Route exact path="/login" render={() => <LoginForm />}></Route>
+          <Route
+            path="/login"
+            render={() => (
+              <>
+                {loggedIn ? <Redirect to="/" /> : <LoginForm login={doLogIn} />}
+              </>
+            )}
+          />
           <Route
             exact
             path="/:selectedFilter"
@@ -143,21 +207,39 @@ function App() {
               } else {
                 setFilter(match.params.selectedFilter);
               }
+
               if (loading) {
-                return <p id="loading">Please wait, loading your tasks...</p>;
+                return (
+                  <>
+                    {loggedIn ? (
+                      <p id="loading">Please wait, loading your tasks...</p>
+                    ) : (
+                      <Redirect to="/login" />
+                    )}
+                  </>
+                );
+                //{ loggedIn ? <p id="loading">Please wait, loading your tasks...</p> : <Redirect to="/login" /> }
+                //return (<p id="loading">Please wait, loading your tasks...</p>);
               } else {
                 return (
-                  <CentralRow
-                    selectedFilter={match.params.selectedFilter}
-                    setFilter={setFilter}
-                    setDone={setDone}
-                    createElement={addElementAndRefresh}
-                    taskList={taskList}
-                    removeTask={removeTask}
-                    setDirty={setDirty}
-                    setLoading={setLoading}
-                    deleteLocal={deleteLocal}
-                  ></CentralRow>
+                  <>
+                    {loggedIn ? (
+                      <LogoutButton logout={doLogOut} />
+                    ) : (
+                      <Redirect to="/login" />
+                    )}
+                    <CentralRow
+                      selectedFilter={match.params.selectedFilter}
+                      setFilter={setFilter}
+                      setDone={setDone}
+                      createElement={addElementAndRefresh}
+                      taskList={taskList}
+                      removeTask={removeTask}
+                      setDirty={setDirty}
+                      setLoading={setLoading}
+                      deleteLocal={deleteLocal}
+                    ></CentralRow>
+                  </>
                 );
               }
             }}
@@ -167,20 +249,37 @@ function App() {
             path="/"
             render={() => {
               if (loading) {
-                return <p id="loading">Please wait, loading your tasks...</p>;
+                return (
+                  <>
+                    {loggedIn ? (
+                      <p id="loading">Please wait, loading your tasks...</p>
+                    ) : (
+                      <Redirect to="/login" />
+                    )}
+                  </>
+                );
+                //{ loggedIn ? <p id="loading">Please wait, loading your tasks...</p> : <Redirect to="/login" /> }
+                //return (<p id="loading">Please wait, loading your tasks...</p>);
               } else {
                 return (
-                  <CentralRow
-                    selectedFilter={"All"}
-                    setFilter={setFilter}
-                    setDone={setDone}
-                    createElement={addElementAndRefresh}
-                    taskList={taskList}
-                    removeTask={removeTask}
-                    setDirty={setDirty}
-                    setLoading={setLoading}
-                    deleteLocal={deleteLocal}
-                  ></CentralRow>
+                  <>
+                    {loggedIn ? (
+                      <LogoutButton logout={doLogOut} />
+                    ) : (
+                      <Redirect to="/login" />
+                    )}
+                    <CentralRow
+                      selectedFilter={"All"}
+                      setFilter={setFilter}
+                      setDone={setDone}
+                      createElement={addElementAndRefresh}
+                      taskList={taskList}
+                      removeTask={removeTask}
+                      setDirty={setDirty}
+                      setLoading={setLoading}
+                      deleteLocal={deleteLocal}
+                    ></CentralRow>
+                  </>
                 );
               }
             }}
