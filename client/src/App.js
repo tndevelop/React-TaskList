@@ -24,29 +24,14 @@ const DummyTaskList = new List();
 function App() {
   const [taskList, setTaskList] = useState([]); /*DummyTaskList.getList()*/
   const [addedTask, setAddedTask] = useState(false);
-  const [filter, setFilter] = useState("Undef");
+  //const [filter, setFilter] = useState("Undef");
+  const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({ id: -1 });
   
-  /*
-  useEffect(() => {
-    const checkAuth = async () => {
-      // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
-      if(loggedIn){
-        const tmpUser = await API.getUserInfo();
-        setUser(tmpUser);
-        setLoggedIn(true);
-        setDirty(true);
-      }else{
-        setUser([]);
-      }   
-    };
-    checkAuth();
-  }, [loggedIn, user.id]);
-  */
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
@@ -59,7 +44,6 @@ function App() {
 
   useEffect(() => {
     const getTasks = async () => {
-      console.log("dentro getTasks");
       if (loggedIn) {
         //const tasks = await API.fetchTasks(filter, user);
         const tasks = await API.fetchTasks(filter);
@@ -79,7 +63,7 @@ function App() {
         setTaskList(DummyTaskList.getList());
       }
     };
-    if (dirty && filter !== "undef" && loggedIn) {
+    if (dirty  && loggedIn) {
       getTasks()
         .then(() => {
           setLoading(false);
@@ -154,29 +138,14 @@ function App() {
     await API.fetchDeleteTask(task);
     setDirty(true);
   };
-/*
-  const markTask = (task) => {
-    task.completed = !task.completed;
-    API.fetchMarkTask(
-      new Task(
-        task.id,
-        task.description,
-        task.important,
-        task.private,
-        task.deadline,
-        task.completed,
-        task.user
-      )
-    );
-    setDirty(true);
-  };
-*/
+
   const doLogIn = async (credentials) => {
     try {
       const response = await API.logIn(credentials);
       if (response) {
         setUser({id:response.id, name:response.name});
         setLoggedIn(true);
+        setDirty(true);//così viene eseguita la useEffect
         return response.name;
       }
     } catch (e) {
@@ -191,11 +160,6 @@ function App() {
     // clean up everything
     DummyTaskList.reset();
     setTaskList(DummyTaskList.getList());
-
-    /*
-    setCourses([]);
-    setExams([]);
-    */
   };
 
   /**
@@ -211,8 +175,7 @@ function App() {
           <Route
             path="/login"
             render={() => (
-              <>
-                {loggedIn ? <Redirect to="/" /> : <LoginForm login={doLogIn} />}
+              <>{loggedIn ? <Redirect to={"/" + filter} /> : <LoginForm login={doLogIn} />}
               </>
             )}
           />
@@ -273,6 +236,7 @@ function App() {
             exact
             path="/"
             render={() => {
+              setFilter("All");
               if (loading) {
                 return (
                   <>

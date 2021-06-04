@@ -42,7 +42,6 @@ function AddEditForm(props) {
     event.preventDefault();
     if (!validDescription() || !validDeadline()) return;
     //if (props.task) props.delete(props.task);
-    
     if(props.task){
       //props.delete(props.task);
       props.deleteLocal(props.task);
