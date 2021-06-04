@@ -110,8 +110,8 @@ function App() {
       isPrivate,
       deadline,
       isCompleted,
+      user.id, //user is a state variable
       status,
-      user.id //user is a state variable
     );
     
     setTaskList(DummyTaskList.getList());
@@ -243,9 +243,7 @@ function App() {
                     )}
                   </>
                 );
-                //{ loggedIn ? <p id="loading">Please wait, loading your tasks...</p> : <Redirect to="/login" /> }
-                //return (<p id="loading">Please wait, loading your tasks...</p>);
-              } else {
+              } else { 
                 return (
                   <>
                     {loggedIn ? (<>
