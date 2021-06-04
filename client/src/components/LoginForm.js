@@ -63,10 +63,13 @@ function LoginForm(props) {
   );
 }
 
-function LogoutButton(props) {
+function LogoutButtonAndWelcomeUser(props) {
+  const [welcome, setWelcome] = useState(true);
+
   return (
     <Row className="below-nav">
       <Col sm="4"></Col>
+      {welcome ? <Alert variant="success" onClose={() => setWelcome(false)} dismissible>Welcome, {props.username}</Alert> : ""}
       <Button variant="danger" as={Col} onClick={props.logout}>
         Logout
       </Button>
@@ -75,4 +78,4 @@ function LogoutButton(props) {
   );
 }
 
-export { LoginForm, LogoutButton };
+export { LoginForm, LogoutButtonAndWelcomeUser };

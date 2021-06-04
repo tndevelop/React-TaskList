@@ -6,7 +6,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavbar from "./components/MyNavbar";
 import "./components/TaskList.js";
-import { Task, List } from "./TaskListCreate";
+import { List } from "./TaskListCreate";
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,7 +14,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
-import { LoginForm, LogoutButton } from "./components/LoginForm.js";
+import { LoginForm, LogoutButtonAndWelcomeUser } from "./components/LoginForm.js";
 import API from "./fileJS/API.js";
 import dayjs from "dayjs";
 
@@ -50,7 +50,8 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
-      await API.getUserInfo();
+      const userInfo = await API.getUserInfo();
+      setUser({id:userInfo.id, name:userInfo.name});
       setLoggedIn(true);
     };
     checkAuth();
@@ -174,11 +175,12 @@ function App() {
     try {
       const response = await API.logIn(credentials);
       if (response) {
+        setUser({id:response.id, name:response.name});
         setLoggedIn(true);
         return response.name;
       }
     } catch (e) {
-      return e.message;
+      return "Incorrect username and/or password";
     }
   };
 
@@ -246,8 +248,9 @@ function App() {
               } else {
                 return (
                   <>
-                    {loggedIn ? (
-                      <LogoutButton logout={doLogOut} />
+                    {loggedIn ? (<>
+                        <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
+                      </>
                     ) : (
                       <Redirect to="/login" />
                     )}
@@ -287,8 +290,9 @@ function App() {
               } else {
                 return (
                   <>
-                    {loggedIn ? (
-                      <LogoutButton logout={doLogOut} />
+                    {loggedIn ? (<>
+                        <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
+                        </>
                     ) : (
                       <Redirect to="/login" />
                     )}
