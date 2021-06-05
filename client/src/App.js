@@ -31,13 +31,17 @@ function App() {
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({ id: -1 });
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
-      const userInfo = await API.getUserInfo();
-      setUser({id:userInfo.id, name:userInfo.name});
-      setLoggedIn(true);
+      try {
+        const userInfo = await API.getUserInfo();
+        setUser({ id: userInfo.id, name: userInfo.name });
+        setLoggedIn(true);
+      } catch(err) {
+        console.log(err.error);
+      }
     };
     checkAuth();
   }, []);
@@ -63,7 +67,7 @@ function App() {
         setTaskList(DummyTaskList.getList());
       }
     };
-    if (dirty  && loggedIn) {
+    if (dirty && loggedIn) {
       getTasks()
         .then(() => {
           setLoading(false);
@@ -97,9 +101,9 @@ function App() {
       user.id, //user is a state variable
       status,
     );
-    
+
     setTaskList(DummyTaskList.getList());
-    
+
     setAddedTask(!addedTask);
   };
 
@@ -143,7 +147,7 @@ function App() {
     try {
       const response = await API.logIn(credentials);
       if (response) {
-        setUser({id:response.id, name:response.name});
+        setUser({ id: response.id, name: response.name });
         setLoggedIn(true);
         setDirty(true);//così viene eseguita la useEffect
         return response.name;
@@ -206,12 +210,12 @@ function App() {
                     )}
                   </>
                 );
-              } else { 
+              } else {
                 return (
                   <>
                     {loggedIn ? (<>
-                        <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
-                      </>
+                      <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
+                    </>
                     ) : (
                       <Redirect to="/login" />
                     )}
@@ -225,7 +229,7 @@ function App() {
                       setDirty={setDirty}
                       setLoading={setLoading}
                       deleteLocal={deleteLocal}
-                      userId = {user.id}
+                      userId={user.id}
                     ></CentralRow>
                   </>
                 );
@@ -253,8 +257,8 @@ function App() {
                 return (
                   <>
                     {loggedIn ? (<>
-                        <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
-                        </>
+                      <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
+                    </>
                     ) : (
                       <Redirect to="/login" />
                     )}
@@ -268,7 +272,7 @@ function App() {
                       setDirty={setDirty}
                       setLoading={setLoading}
                       deleteLocal={deleteLocal}
-                      userId = {user.id}
+                      userId={user.id}
                     ></CentralRow>
                   </>
                 );
