@@ -10,11 +10,15 @@ function LoginForm(props) {
   const validString = (str) => {
     return str.length !== 0 && str.search(/^\s+$/gm) === -1;
   };
+  const validEmail = (email) => {
+    let mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return email.match(mailformat) == null ? false : true
+  }
 
   const tryLogin = async (event) => {
     event.preventDefault();
     const credentials = { username, password };
-    if (!validString(username) || !validString(password)) return;
+    if (!validString(username) || !validString(password) || !validEmail(username)) return;
 
     setMessage("");
     let response = await props.login(credentials);
@@ -33,10 +37,10 @@ function LoginForm(props) {
             placeholder="Enter username"
             value={username}
             onChange={(ev) => setUsername(ev.target.value)}
-            isInvalid={!validString(username)}
+            isInvalid={(!validString(username) || !validEmail(username))}
           />
           <Form.Control.Feedback type="invalid">
-            Email must be not empty
+            Insert a valid email
           </Form.Control.Feedback>
         </Form.Group>
 
