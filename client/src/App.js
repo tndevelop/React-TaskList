@@ -33,6 +33,8 @@ function App() {
   const [dirty, setDirty] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({ id: -1 });
+  const [welcome, setWelcome] = useState(false);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -147,6 +149,7 @@ function App() {
         setUser({ id: response.id, name: response.name });
         setLoggedIn(true);
         setDirty(true); //così viene eseguita la useEffect
+        setWelcome(true);
         return response.name;
       }
     } catch (e) {
@@ -215,6 +218,8 @@ function App() {
                         <LogoutButtonAndWelcomeUser
                           logout={doLogOut}
                           username={user.name}
+                          welcome={welcome}
+                          setWelcome={setWelcome}
                         />
                       </>
                     ) : (
@@ -262,6 +267,8 @@ function App() {
                         <LogoutButtonAndWelcomeUser
                           logout={doLogOut}
                           username={user.name}
+                          welcome={welcome}
+                          setWelcome={setWelcome}
                         />
                       </>
                     ) : (

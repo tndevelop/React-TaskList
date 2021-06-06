@@ -74,18 +74,16 @@ function LoginForm(props) {
 }
 
 function LogoutButtonAndWelcomeUser(props) {
-  const [welcome, setWelcome] = useState(true);
-
   return (
     <>
       <Row className="below-nav">
         <Col sm="3"></Col>
         <Col>
-          {welcome ? (
+          {props.welcome ? (
             <Alert
               as={Col}
               variant="success"
-              onClose={() => setWelcome(false)}
+              onClose={() => props.setWelcome(false)}
               dismissible
               className="text-center"
             >
