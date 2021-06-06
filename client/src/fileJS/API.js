@@ -16,7 +16,9 @@ const fetchTasks = async (filter) => {
 };
 
 const fetchAddTask = async (task) => {
-  task.deadline = task.deadline ? dayjs(task.deadline).format("YYYY-MM-DD HH:mm") : "";
+  task.deadline = task.deadline
+    ? dayjs(task.deadline).format("YYYY-MM-DD HH:mm")
+    : "";
   const response = await fetch("/api/tasks", {
     method: "POST",
     headers: {
@@ -28,7 +30,9 @@ const fetchAddTask = async (task) => {
 };
 
 const fetchUpdateTask = async (task) => {
-  task.deadline = task.deadline ? dayjs(task.deadline).format("YYYY-MM-DD HH:mm"): "";
+  task.deadline = task.deadline
+    ? dayjs(task.deadline).format("YYYY-MM-DD HH:mm")
+    : "";
   const response = await fetch("/api/tasks/update", {
     method: "PUT",
     headers: {
@@ -55,7 +59,6 @@ const fetchMarkTask = async (task) => {
 };
 
 const fetchDeleteTask = async (task) => {
-  //debugger;
   const response = await fetch("/api/tasks/delete/" + task.id, {
     method: "DELETE",
     /*headers: {
@@ -85,17 +88,6 @@ async function logIn(credentials) {
     body: JSON.stringify(credentials),
   });
   return await response.json();
-  /*if (response.ok) {
-    const user = await response.json();
-    return user.name;
-  } else {
-    try {
-      const errDetail = await response.json();
-      throw errDetail.message;
-    } catch (err) {
-      throw err;
-    }
-  }*/
 }
 
 async function logOut() {
@@ -109,12 +101,12 @@ async function getUserInfo() {
 }
 */
 async function getUserInfo() {
-  const response = await fetch(BASEURL + '/sessions/current');
+  const response = await fetch(BASEURL + "/sessions/current");
   const userInfo = await response.json();
   if (response.ok) {
     return userInfo;
   } else {
-    throw userInfo;  // an object with the error coming from the server
+    throw userInfo; // an object with the error coming from the server
   }
 }
 

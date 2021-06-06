@@ -14,7 +14,10 @@ import {
   Redirect,
 } from "react-router-dom";
 import { CentralRow } from "./components/CentralRow";
-import { LoginForm, LogoutButtonAndWelcomeUser } from "./components/LoginForm.js";
+import {
+  LoginForm,
+  LogoutButtonAndWelcomeUser,
+} from "./components/LoginForm.js";
 import API from "./fileJS/API.js";
 import dayjs from "dayjs";
 
@@ -28,18 +31,16 @@ function App() {
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
-  const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({ id: -1 });
 
   useEffect(() => {
     const checkAuth = async () => {
-      // TODO: qui avremo le info sull'utente dal server, possiamo salvare da qualche parte
       try {
         const userInfo = await API.getUserInfo();
         setUser({ id: userInfo.id, name: userInfo.name });
         setLoggedIn(true);
-      } catch(err) {
+      } catch (err) {
         console.log(err.error);
       }
     };
@@ -74,10 +75,6 @@ function App() {
           setDirty(false);
         })
         .catch((err) => {
-          setMessage({
-            msg: "Impossible to load your exams! Please, try again later...",
-            type: "danger",
-          });
           console.error(err);
         });
     }
@@ -99,7 +96,7 @@ function App() {
       deadline,
       isCompleted,
       user.id, //user is a state variable
-      status,
+      status
     );
 
     setTaskList(DummyTaskList.getList());
@@ -149,7 +146,7 @@ function App() {
       if (response) {
         setUser({ id: response.id, name: response.name });
         setLoggedIn(true);
-        setDirty(true);//così viene eseguita la useEffect
+        setDirty(true); //così viene eseguita la useEffect
         return response.name;
       }
     } catch (e) {
@@ -166,11 +163,6 @@ function App() {
     setTaskList(DummyTaskList.getList());
   };
 
-  /**
-   * Apply filter to `taskList`
-   * @param {string} filterName
-   * @returns {Array<Task>} filtered list
-   */
   return (
     <Router>
       <Container fluid="true">
@@ -179,7 +171,12 @@ function App() {
           <Route
             path="/login"
             render={() => (
-              <>{loggedIn ? <Redirect to={"/" + filter} /> : <LoginForm login={doLogIn} />}
+              <>
+                {loggedIn ? (
+                  <Redirect to={"/" + filter} />
+                ) : (
+                  <LoginForm login={doLogIn} />
+                )}
               </>
             )}
           />
@@ -213,9 +210,13 @@ function App() {
               } else {
                 return (
                   <>
-                    {loggedIn ? (<>
-                      <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
-                    </>
+                    {loggedIn ? (
+                      <>
+                        <LogoutButtonAndWelcomeUser
+                          logout={doLogOut}
+                          username={user.name}
+                        />
+                      </>
                     ) : (
                       <Redirect to="/login" />
                     )}
@@ -256,9 +257,13 @@ function App() {
               } else {
                 return (
                   <>
-                    {loggedIn ? (<>
-                      <LogoutButtonAndWelcomeUser logout={doLogOut} username={user.name} />
-                    </>
+                    {loggedIn ? (
+                      <>
+                        <LogoutButtonAndWelcomeUser
+                          logout={doLogOut}
+                          username={user.name}
+                        />
+                      </>
                     ) : (
                       <Redirect to="/login" />
                     )}

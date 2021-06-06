@@ -11,14 +11,20 @@ function LoginForm(props) {
     return str.length !== 0 && str.search(/^\s+$/gm) === -1;
   };
   const validEmail = (email) => {
-    let mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    return email.match(mailformat) == null ? false : true
-  }
+    let mailformat =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return email.match(mailformat) == null ? false : true;
+  };
 
   const tryLogin = async (event) => {
     event.preventDefault();
     const credentials = { username, password };
-    if (!validString(username) || !validString(password) || !validEmail(username)) return;
+    if (
+      !validString(username) ||
+      !validString(password) ||
+      !validEmail(username)
+    )
+      return;
 
     setMessage("");
     let response = await props.login(credentials);
@@ -37,7 +43,7 @@ function LoginForm(props) {
             placeholder="Enter username"
             value={username}
             onChange={(ev) => setUsername(ev.target.value)}
-            isInvalid={(!validString(username) || !validEmail(username))}
+            isInvalid={!validString(username) || !validEmail(username)}
           />
           <Form.Control.Feedback type="invalid">
             Insert a valid email
@@ -72,18 +78,32 @@ function LogoutButtonAndWelcomeUser(props) {
 
   return (
     <>
-    <Row className="below-nav">
-      <Col sm="4"></Col>
-      {welcome ? <Alert variant="success" onClose={() => setWelcome(false)} dismissible>Welcome, {props.username}</Alert> : ""}
-      <Col sm="4"></Col>
-    </Row>
-    <Row >
-      <Col sm="4"></Col>  
-      <Button variant="danger" as={Col} onClick={props.logout}>
-        Logout
-      </Button>
-      <Col sm="4"></Col>
-    </Row>
+      <Row className="below-nav">
+        <Col sm="3"></Col>
+        <Col>
+          {welcome ? (
+            <Alert
+              as={Col}
+              variant="success"
+              onClose={() => setWelcome(false)}
+              dismissible
+              className="text-center"
+            >
+              Welcome, {props.username}
+            </Alert>
+          ) : (
+            ""
+          )}
+        </Col>
+        <Col sm="3"></Col>
+      </Row>
+      <Row>
+        <Col sm="4"></Col>
+        <Button variant="danger" as={Col} onClick={props.logout}>
+          Logout
+        </Button>
+        <Col sm="4"></Col>
+      </Row>
     </>
   );
 }

@@ -100,7 +100,7 @@ Response body:
 ]
 ```
 
-**Get task by id**
+### **Get task by id**
 
 URL: `/api/tasks/:id`
 
