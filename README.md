@@ -1,6 +1,6 @@
 # BigLab 2 - Class: 2021 AW1 M-Z
 
-## Team name: TEAM_NAME
+## Team name: CodingInTheShadows
 
 Team members:
 
